@@ -15,8 +15,13 @@ import javax.jdo.listener.StoreLifecycleListener;
 import javax.jdo.listener.LoadLifecycleListener;
 import javax.jdo.listener.InstanceLifecycleEvent;
 
+/**
+ * Class that provides suitable hooks for auditing of a persistence process.
+ *
+ * This implementation simply logs the audit events.
+ */
 public class AuditListener implements CreateLifecycleListener,
-    DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener
+    DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener, javax.transaction.Synchronization
 {
     PersistenceManager pm = null;
 
@@ -75,5 +80,14 @@ public class AuditListener implements CreateLifecycleListener,
     {
         NucleusLogger.GENERAL.info("Audit : postStore for " +
             ((Persistable)event.getSource()).dnGetObjectId());
+    }
+
+    public void beforeCompletion()
+    {
+        NucleusLogger.GENERAL.info("Audit : TXN COMMIT START");
+    }
+    public void afterCompletion(int status)
+    {
+        NucleusLogger.GENERAL.info("Audit : TXN COMMIT END status=" + status);
     }
 }

@@ -19,8 +19,10 @@ public class SimpleTest
 
         // Create of object
         PersistenceManager pm = pmf.getPersistenceManager();
-        pm.addInstanceLifecycleListener(new AuditListener(pm), null);
+        AuditListener audit = new AuditListener(pm);
+        pm.addInstanceLifecycleListener(audit, null);
         Transaction tx = pm.currentTransaction();
+        tx.setSynchronization(audit);
         try
         {
             tx.begin();
@@ -47,8 +49,10 @@ public class SimpleTest
 
         // Update of field
         pm = pmf.getPersistenceManager();
-        pm.addInstanceLifecycleListener(new AuditListener(pm), null);
+        audit = new AuditListener(pm);
+        pm.addInstanceLifecycleListener(audit, null);
         tx = pm.currentTransaction();
+        tx.setSynchronization(audit);
         try
         {
             tx.begin();
