@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import mydomain.model.*;
 import mydomain.audit.AuditListener;
 import org.datanucleus.util.NucleusLogger;
+import org.datanucleus.api.jdo.JDOTransaction;
 
 public class SimpleTest
 {
@@ -19,10 +20,10 @@ public class SimpleTest
 
         // Create of object
         PersistenceManager pm = pmf.getPersistenceManager();
-        AuditListener audit = new AuditListener(pm);
+        AuditListener audit = new AuditListener();
         pm.addInstanceLifecycleListener(audit, null);
         Transaction tx = pm.currentTransaction();
-        tx.setSynchronization(audit);
+        ((JDOTransaction)tx).registerEventListener(audit);
         try
         {
             tx.begin();
@@ -49,10 +50,10 @@ public class SimpleTest
 
         // Update of field
         pm = pmf.getPersistenceManager();
-        audit = new AuditListener(pm);
+        audit = new AuditListener();
         pm.addInstanceLifecycleListener(audit, null);
         tx = pm.currentTransaction();
-        tx.setSynchronization(audit);
+        ((JDOTransaction)tx).registerEventListener(audit);
         try
         {
             tx.begin();
@@ -79,7 +80,6 @@ public class SimpleTest
             }
             pm.close();
         }
-
 
         pmf.close();
         NucleusLogger.GENERAL.info(">> test END");

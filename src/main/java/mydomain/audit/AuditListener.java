@@ -1,6 +1,7 @@
 package mydomain.audit;
 
 import org.datanucleus.ExecutionContext;
+import org.datanucleus.TransactionEventListener;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.util.NucleusLogger;
@@ -21,13 +22,10 @@ import javax.jdo.listener.InstanceLifecycleEvent;
  * This implementation simply logs the audit events.
  */
 public class AuditListener implements CreateLifecycleListener,
-    DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener, javax.transaction.Synchronization
+    DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener, TransactionEventListener
 {
-    PersistenceManager pm = null;
-
-    public AuditListener(PersistenceManager pm)
+    public AuditListener()
     {
-        this.pm = pm;
     }
 
     public void postCreate(InstanceLifecycleEvent event)
@@ -57,13 +55,13 @@ public class AuditListener implements CreateLifecycleListener,
     public void preStore(InstanceLifecycleEvent event)
     {
         Persistable pc = (Persistable)event.getSource();
+        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
         String[] dirtyFields = NucleusJDOHelper.getDirtyFields(pc, pm);
         NucleusLogger.GENERAL.info("Audit : preStore for " +
             pc.dnGetObjectId() + " dirtyFields=" + StringUtils.objectArrayToString(dirtyFields));
         if (dirtyFields != null && dirtyFields.length > 0)
         {
-            ExecutionContext ec = ((JDOPersistenceManager)pm).getExecutionContext();
-            ObjectProvider op = ec.findObjectProvider(pc);
+            ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
             if (op != null)
             {
                 for (int i=0;i<dirtyFields.length;i++)
@@ -82,12 +80,26 @@ public class AuditListener implements CreateLifecycleListener,
             ((Persistable)event.getSource()).dnGetObjectId());
     }
 
-    public void beforeCompletion()
+    public void transactionStarted()
     {
-        NucleusLogger.GENERAL.info("Audit : TXN COMMIT START");
+        NucleusLogger.GENERAL.info("Audit : TXN START");
     }
-    public void afterCompletion(int status)
+    public void transactionEnded() {}
+    public void transactionPreFlush() {}
+    public void transactionFlushed() {}
+
+    public void transactionPreCommit()
     {
-        NucleusLogger.GENERAL.info("Audit : TXN COMMIT END status=" + status);
+        NucleusLogger.GENERAL.info("Audit : TXN PRE-COMMIT");
     }
+
+    public void transactionCommitted()
+    {
+        NucleusLogger.GENERAL.info("Audit : TXN COMMITTED");
+    }
+    public void transactionPreRollBack() {}
+    public void transactionRolledBack() {}
+    public void transactionSetSavepoint(String name) {}
+    public void transactionReleaseSavepoint(String name) {}
+    public void transactionRollbackToSavepoint(String name) {}
 }
