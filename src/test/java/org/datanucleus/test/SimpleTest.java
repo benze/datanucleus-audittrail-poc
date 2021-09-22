@@ -1,6 +1,5 @@
 package org.datanucleus.test;
 
-import java.util.*;
 import org.junit.*;
 import javax.jdo.*;
 
@@ -28,7 +27,7 @@ public class SimpleTest
         {
             tx.begin();
 
-            Person p = new Person(1, "First Person");
+            Student p = new Student(1, "First Student");
             pm.makePersistent(p);
 
             tx.commit();
@@ -58,13 +57,18 @@ public class SimpleTest
         {
             tx.begin();
 
-            Person p = pm.getObjectById(Person.class, 1);
-            p.setName("Second Person");
+            Student p = pm.getObjectById(Student.class, 1);
+            p.getName();
+            p.setName("Second Student");
+
+            pm.flush();
+            pm.deletePersistent(p);
+            pm.flush();
 
             tx.commit();
 
             NucleusLogger.GENERAL.info(">> non-tx update");
-            p.setName("Third Person");
+            p.setName("Third Student");
             NucleusLogger.GENERAL.info(">> non-tx update done");
         }
         catch (Throwable thr)
