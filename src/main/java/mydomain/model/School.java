@@ -11,9 +11,6 @@ import java.util.Set;
 @PersistenceCapable(detachable="true")
 public class School
 {
-    @PrimaryKey
-    Long id;
-
     String name;
 
     // 1-n
@@ -26,15 +23,9 @@ public class School
     @Element(column = "ELEMENT")
     Set<Student> students;
 
-    public School(long id, String name)
+    public School(String name)
     {
-        this.id = id;
         this.name = name;
-    }
-
-    public Long getId()
-    {
-        return id;
     }
 
     public String getName()

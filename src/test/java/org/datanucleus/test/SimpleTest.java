@@ -1,5 +1,6 @@
 package org.datanucleus.test;
 
+import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.junit.*;
 import javax.jdo.*;
 
@@ -27,7 +28,7 @@ public class SimpleTest
         {
             tx.begin();
 
-            Student p = new Student(1, "First Student");
+            Student p = new Student("First Student");
             pm.makePersistent(p);
 
             tx.commit();
@@ -57,7 +58,9 @@ public class SimpleTest
         {
             tx.begin();
 
-            Student p = pm.getObjectById(Student.class, 1);
+            Object id = new DatastoreIdImplKodo( Student.class.getName(), 1);
+
+            Student p = pm.getObjectById(Student.class, id);
             p.getName();
             p.setName("Second Student");
 

@@ -6,8 +6,6 @@ import java.util.Map;
 @PersistenceCapable(detachable="true")
 public class Student
 {
-    @PrimaryKey
-    Long id;
     String name;
 
     // 0-1
@@ -21,15 +19,9 @@ public class Student
     @Value(column = "TELEPHONE_ID")
     Map<TelephoneType, Telephone> telephoneNbs;
 
-    public Student(long id, String name)
+    public Student(String name)
     {
-        this.id = id;
         this.name = name;
-    }
-
-    public Long getId()
-    {
-        return id;
     }
 
     public String getName()

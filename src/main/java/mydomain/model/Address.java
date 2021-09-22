@@ -8,10 +8,6 @@ import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(detachable="true")
 public class Address
 {
-    @PrimaryKey
-    Long id;
-
-
     // n-n mapping table
     @Join (column = "ID")
     @Element(column = "ELEMENT")
@@ -19,13 +15,7 @@ public class Address
 
     public Address(long id, Street[] street)
     {
-        this.id = id;
         this.street = street;
-    }
-
-    public Long getId()
-    {
-        return id;
     }
 
     public Street[] getStreet()
