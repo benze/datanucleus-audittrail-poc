@@ -1,5 +1,6 @@
 package mydomain.audit;
 
+import mydomain.datatrail.Entity;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.TransactionEventListener;
 import org.datanucleus.enhancement.Persistable;
@@ -15,6 +16,7 @@ import javax.jdo.listener.DeleteLifecycleListener;
 import javax.jdo.listener.StoreLifecycleListener;
 import javax.jdo.listener.LoadLifecycleListener;
 import javax.jdo.listener.InstanceLifecycleEvent;
+import java.util.Stack;
 
 /**
  * Class that provides suitable hooks for auditing of a persistence process.
@@ -24,6 +26,11 @@ import javax.jdo.listener.InstanceLifecycleEvent;
 public class AuditListener implements CreateLifecycleListener,
     DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener, TransactionEventListener
 {
+
+
+    Stack<Entity> modifications = new Stack<>();
+
+
     public AuditListener()
     {
     }
@@ -74,10 +81,17 @@ public class AuditListener implements CreateLifecycleListener,
         }
     }
 
-    public void postStore(InstanceLifecycleEvent event)
-    {
+    public void postStore(InstanceLifecycleEvent event) {
         NucleusLogger.GENERAL.info("Audit : postStore for " +
-            ((Persistable)event.getSource()).dnGetObjectId());
+                ((Persistable) event.getSource()).dnGetObjectId());
+
+
+        if (!(event.getSource() instanceof Persistable)) {
+            NucleusLogger.GENERAL.debug("Nothing to do. No persistable object found. : " + event.getSource().getClass().getName());
+            return;
+        }
+        Persistable pc = (Persistable) event.getSource();
+        modifications.push(new Entity(pc));
     }
 
     public void transactionStarted()
