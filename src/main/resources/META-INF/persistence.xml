@@ -6,8 +6,8 @@
 
     <persistence-unit name="MyTest">
         <!-- Add all of your model classes here -->
-        <class>mydomain.model.Person</class>
-        <exclude-unlisted-classes />
+<!--        <class>mydomain.model.Student</class>-->
+<!--        <exclude-unlisted-classes />-->
         <properties>
             <!-- Update these datastore details if different -->
             <property name="javax.jdo.PersistenceManagerFactoryClass" value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory"/>
@@ -15,9 +15,14 @@
             <property name="javax.jdo.option.ConnectionURL" value="jdbc:h2:mem:nucleus"/>
             <property name="javax.jdo.option.ConnectionUserName" value="sa"/>
             <property name="javax.jdo.option.ConnectionPassword" value=""/>
+            <property name="javax.jdo.option.RestoreValues	" value="true"/>  <!-- required for DataTrail -->
 
             <property name="datanucleus.schema.autoCreateAll" value="true"/>
             <property name="datanucleus.schema.generateDatabase.mode" value="drop-and-create"/>
+
+            <property name="datanucleus.datastoreIdentityType" value="kodo"/>
+
+
         </properties>
     </persistence-unit>
 
