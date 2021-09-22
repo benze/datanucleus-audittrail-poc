@@ -1,0 +1,174 @@
+    {
+        "action": "CREATION",
+        "class": "izone.adams.business.test.model.Sample",
+        "id": "11031176",
+        "fields": [
+            {
+                "name": "addPerson",
+                "type": "ref",
+                "class": "izone.adams.model.ActivePerson",
+                "id": "6124956",
+                "desc": "zorbuser.lg"
+            },
+            {
+                "name": "addStampLong",
+                "type": "prim",
+                "val": "1632325054281"
+            },
+            {
+                "name": "addTimeZone",
+                "type": "prim",
+                "val": "GMT"
+            },
+            {
+                "name": "enterprise",
+                "type": "ref",
+                "class": "izone.adams.business.organization.model.Enterprise",
+                "id": "4321",
+                "desc": "test enterprise"
+            },
+            {
+                "name": "isPermanentRetired",
+                "type": "prim",
+                "val": "false"
+            },
+            {
+                "name": "isRetired",
+                "type": "prim",
+                "val": "false"
+            },
+            {
+                "name": "modPerson",
+                "type": "ref",
+                "class": "izone.adams.model.ActivePerson",
+                "id": "6124956",
+                "desc": "zorbuser.lg"
+            },
+            {
+                "name": "modStampLong",
+                "type": "prim",
+                "val": "1632325054281"
+            },
+            {
+                "name": "modTimeZone",
+                "type": "prim",
+                "val": "GMT"
+            },
+            {
+                "name": "code",
+                "type": "prim",
+                "val": "New123"
+            },
+            {
+                "name": "collectedAfter3Days",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "dcf",
+                "type": "ref",
+                "class": "izone.adams.business.test.model.DCF",
+                "id": "11031135"
+            },
+            {
+                "name": "donated",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "exposedToExtremeConditions",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "hour",
+                "type": "prim",
+                "val": "1"
+            },
+            {
+                "name": "lab",
+                "type": "ref",
+                "class": "izone.adams.business.organization.model.Organization",
+                "id": "582425",
+                "desc": "TESTLAB"
+            },
+            {
+                "name": "labNotified",
+                "type": "prim",
+                "val": "false"
+            },
+            {
+                "name": "manufacturer",
+                "type": "ref",
+                "class": "izone.adams.business.samples.model.Manufacturer",
+                "id": "10260931",
+                "desc": "Lockcon - Switzerland"
+            },
+            {
+                "name": "min",
+                "type": "prim",
+                "val": "0"
+            },
+            {
+                "name": "partial",
+                "type": "prim",
+                "val": "false"
+            },
+            {
+                "name": "sampleDetail",
+                "type": "ref",
+                "class": "izone.adams.business.test.model.SampleDetail",
+                "id": "11031177"
+            },
+            {
+                "name": "seated",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "simulation",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "tempLoggerMatchingStatus",
+                "type": "prim",
+                "val": "0"
+            },
+            {
+                "name": "trained1500High",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "trained2Hrs",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "trainedHigh",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "transfusion",
+                "type": "prim",
+                "val": "-1"
+            },
+            {
+                "name": "type",
+                "type": "ref",
+                "class": "izone.adams.business.test.model.SampleType",
+                "id": "30185",
+                "desc": "Urine"
+            },
+            {
+                "name": "valid",
+                "type": "prim",
+                "val": "1"
+            }
+        ],
+        "noRATImport": false,
+        "user": "zorbuser.lg",
+        "date": "2021-09-22T15:37:34.296Z"
+    }

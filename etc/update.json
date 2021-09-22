@@ -1,0 +1,27 @@
+{
+    "action": "UPDATE",
+    "class": "izone.adams.business.test.model.Sample",
+    "id": "11031136",
+    "version": "4",
+    "fields": [
+        {
+            "name": "manufacturer",
+            "type": "ref",
+            "class": "izone.adams.business.samples.model.Manufacturer",
+            "id": "10260932",
+            "desc": "Versapak - UK",
+            "prev": {
+                "class": "izone.adams.business.samples.model.Manufacturer",
+                "id": "10260932",
+                "desc": "Versapak - UK"
+            }
+        },
+        {
+            "name": "matchingTempLogger",
+            "type": "ref"
+        }
+    ],
+    "noRATImport": false,
+    "user": "zorbuser.lg",
+    "date": "2021-09-22T15:37:34.296Z"
+}
