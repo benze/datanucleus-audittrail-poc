@@ -44,20 +44,18 @@ abstract public class Field {
     /**
      *
      * @param field
-     * @param fmd if null, will only check if field is peristable or otherwise default to primitive
+     * @param fmd
      * @return
      */
     static public Field newField(Object field, FieldMetaData fmd){
-        if( fmd != null ){
-            if( fmd.hasMap()) {
-                return new MapField(field, fmd);
-            } else if( fmd.hasArray() || fmd.hasCollection()) {
-                return new CollectionField(field, fmd);
-            }
-        }
+        if( fmd == null )
+            return newField(field);
 
-
-        if (field instanceof Persistable) {
+        if( fmd.hasMap()) {
+            return new MapField(field, fmd);
+        } else if( fmd.hasArray() || fmd.hasCollection()) {
+            return new CollectionField(field, fmd);
+        } else if (field instanceof Persistable) {
             return new ReferenceField((Persistable) field, fmd.getName());
         }
 
@@ -83,5 +81,27 @@ abstract public class Field {
                 ", value='" + value + '\'' +
                 ", prev='" + prev + '\'' +
                 '}';
+    }
+
+
+
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getPrev() {
+        return prev;
     }
 }

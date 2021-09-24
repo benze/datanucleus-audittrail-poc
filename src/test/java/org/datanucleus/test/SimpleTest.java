@@ -1,14 +1,14 @@
 package org.datanucleus.test;
 
 import org.datanucleus.identity.DatastoreIdImplKodo;
-import org.junit.*;
 import javax.jdo.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import mydomain.model.*;
 import mydomain.audit.AuditListener;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.api.jdo.JDOTransaction;
+import org.junit.jupiter.api.Test;
 
 public class SimpleTest
 {

@@ -112,9 +112,14 @@ public class AuditListener implements CreateLifecycleListener,
         logger.info(modifications.toString());
 
     }
+
     public void transactionPreRollBack() {}
     public void transactionRolledBack() {}
     public void transactionSetSavepoint(String name) {}
     public void transactionReleaseSavepoint(String name) {}
     public void transactionRollbackToSavepoint(String name) {}
+
+    public Stack<Entity> getModifications() {
+        return modifications;
+    }
 }

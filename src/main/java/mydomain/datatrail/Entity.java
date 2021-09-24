@@ -1,5 +1,6 @@
 package mydomain.datatrail;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import mydomain.datatrail.field.Field;
 import org.datanucleus.api.jdo.NucleusJDOHelper;
 import org.datanucleus.enhancement.Persistable;
@@ -25,7 +26,7 @@ public class Entity {
     }
 
     protected Action action;
-    protected String classname;
+    protected String className;
     protected String id;
     protected String version;
     protected List<Field> fields = new ArrayList<>();
@@ -39,12 +40,11 @@ public class Entity {
         setAction( op.getLifecycleState() );
         setId(pc);
 
-        this.classname = op.getClassMetaData().getFullClassName();
+        this.className = op.getClassMetaData().getFullClassName();
         this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
         this.dateModified = Instant.now();
 
         setFields(pc);
-
     }
 
 
@@ -111,12 +111,48 @@ public class Entity {
     public String toString() {
         return "Entity{" +
                 "action=" + action +
-                ", classname='" + classname + '\'' +
+                ", classname='" + className + '\'' +
                 ", id='" + id + '\'' +
                 ", version='" + version + '\'' +
                 ", fields=" + fields +
                 ", username='" + username + '\'' +
                 ", dateModified=" + dateModified +
                 '}';
+    }
+
+
+    @JsonProperty
+    public Action getAction() {
+        return action;
+    }
+
+    @JsonProperty("class")
+    public String getClassName() {
+        return className;
+    }
+
+    @JsonProperty
+    public String getId() {
+        return id;
+    }
+
+    @JsonProperty
+    public String getVersion() {
+        return version;
+    }
+
+    @JsonProperty
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    @JsonProperty("user")
+    public String getUsername() {
+        return username;
+    }
+
+    @JsonProperty
+    public Instant getDateModified() {
+        return dateModified;
     }
 }

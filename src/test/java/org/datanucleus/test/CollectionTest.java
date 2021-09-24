@@ -3,21 +3,18 @@ package org.datanucleus.test;
 import mydomain.audit.AuditListener;
 import mydomain.model.Address;
 import mydomain.model.Street;
-import mydomain.model.Student;
 import org.datanucleus.api.jdo.JDOTransaction;
-import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.datanucleus.util.NucleusLogger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class CollectionTest
-{
+public class CollectionTest {
     @Test
     public void testCollection() {
         NucleusLogger.GENERAL.info(">> test START");
@@ -45,7 +42,6 @@ public class CollectionTest
             pm.close();
         }
     }
-
 
 
 }
