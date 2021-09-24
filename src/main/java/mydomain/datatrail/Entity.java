@@ -19,7 +19,7 @@ import java.util.List;
 
 public class Entity {
 
-    enum Action{
+    public enum Action{
         CREATE,
         UPDATE,
         DELETE

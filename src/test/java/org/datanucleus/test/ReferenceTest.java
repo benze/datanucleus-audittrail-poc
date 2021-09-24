@@ -67,7 +67,7 @@ public class ReferenceTest extends AbstractTest {
 
 
         List<Entity> entities = audit.getModifications();
-        
+
         final IsPojo<Entity> countryCode =
                 pojo(Entity.class)
                         .withProperty("className", is(CountryCode.class.getName()))
@@ -133,16 +133,6 @@ public class ReferenceTest extends AbstractTest {
 
         // check that the datatrail log is correct
         NucleusLogger.GENERAL.info(getJson(audit.getModifications()));
-
-//
-//
-//
-//        assertThat(entity.getFields().get(0), allOf(
-//                hasProperty("name", is("name")),
-//                hasProperty("type", hasToString("PRIMITIVE")),
-//                hasProperty( "value", is("Regina")),
-//                hasProperty("className", is( String.class.getName()))
-//        ));
 
     }
 

@@ -1,31 +1,38 @@
 package org.datanucleus.test;
 
+import com.spotify.hamcrest.pojo.IsPojo;
 import mydomain.audit.AuditListener;
+import mydomain.datatrail.Entity;
+import mydomain.datatrail.field.Field;
 import mydomain.model.Address;
 import mydomain.model.Street;
 import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.util.NucleusLogger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
+import java.io.IOException;
+import java.util.List;
 
+import static mydomain.datatrail.Entity.Action.CREATE;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class CollectionTest {
-    @Test
-    public void testCollection() {
-        NucleusLogger.GENERAL.info(">> test START");
-        PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
+@Execution(ExecutionMode.SAME_THREAD)
+public class CollectionTest extends AbstractTest {
 
-        // Create of object
-        PersistenceManager pm = pmf.getPersistenceManager();
-        AuditListener audit = new AuditListener();
-        pm.addInstanceLifecycleListener(audit, null);
-        Transaction tx = pm.currentTransaction();
-        ((JDOTransaction) tx).registerEventListener(audit);
+
+    @Test
+    public void createCollectionArray() throws IOException {
         try {
             tx.begin();
 
@@ -35,12 +42,27 @@ public class CollectionTest {
         } catch (Throwable thr) {
             NucleusLogger.GENERAL.error(">> Exception in test", thr);
             fail("Failed test : " + thr.getMessage());
-        } finally {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            pm.close();
         }
+
+
+
+        final IsPojo<Entity> street = getEntity(CREATE, Street.class, "1")
+                .withProperty("fields", hasItem(
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina")
+                ));
+
+
+        final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
+                .withProperty("fields", hasItem(
+                        getContainerField(Field.Type.COLLECTION, "street")
+                                .withProperty("elements", hasItem(
+                                        getListElement(Field.Type.REF, Street.class, "1")
+                                ))
+                ));
+
+
+        List<Entity> entities = audit.getModifications();
+        assertThat(entities, containsInAnyOrder(street, address));
     }
 
 

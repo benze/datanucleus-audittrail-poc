@@ -6,7 +6,7 @@ import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.metadata.FieldMetaData;
 
 abstract public class Field {
-    enum Type{
+    public enum Type{
         REF,
         MAP,
         COLLECTION,
