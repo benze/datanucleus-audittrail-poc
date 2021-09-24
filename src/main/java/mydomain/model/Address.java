@@ -4,8 +4,11 @@ import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 
 @PersistenceCapable(detachable="true")
+@Version(strategy= VersionStrategy.VERSION_NUMBER, column="VERSN")
 public class Address
 {
     // n-n mapping table
@@ -13,7 +16,7 @@ public class Address
     @Element(column = "ELEMENT")
     Street[] street;
 
-    public Address(long id, Street[] street)
+    public Address(Street[] street)
     {
         this.street = street;
     }

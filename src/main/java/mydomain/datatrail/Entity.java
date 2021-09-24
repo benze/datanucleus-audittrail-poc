@@ -1,16 +1,23 @@
 package mydomain.datatrail;
 
+import mydomain.datatrail.field.Field;
+import org.datanucleus.api.jdo.NucleusJDOHelper;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.identity.IdentityUtils;
+import org.datanucleus.metadata.AbstractMemberMetaData;
+import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.util.NucleusLogger;
 
 import javax.jdo.PersistenceManager;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Entity {
+
     enum Action{
         CREATE,
         UPDATE,
@@ -21,20 +28,22 @@ public class Entity {
     protected String classname;
     protected String id;
     protected String version;
-    protected Field[] fields;
+    protected List<Field> fields = new ArrayList<>();
     protected String username;
     protected Instant dateModified;
 
 
+
     public Entity(Persistable pc) {
-        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
         ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
         setAction( op.getLifecycleState() );
         setId(pc);
 
-        this.classname = pc.getClass().getName();
+        this.classname = op.getClassMetaData().getFullClassName();
         this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
         this.dateModified = Instant.now();
+
+        setFields(pc);
 
     }
 
@@ -54,16 +63,6 @@ public class Entity {
         }
     }
 
-
-    /**
-     * Identifies which fields need to be set
-     * @param pc
-     */
-    private void setFields( Persistable pc){
-
-    }
-
-
     /**
      * Helper method to set the Id based on the the type of identity of the persistable object.
      * Supports application-id and datastore identity
@@ -73,21 +72,49 @@ public class Entity {
         Object objectId = pc.dnGetObjectId();
 
         if(IdentityUtils.isDatastoreIdentity( objectId ) ) {
-            id = ((DatastoreId) pc.dnGetObjectId()).getKeyAsObject().toString();
+            id = ((DatastoreId) objectId).getKeyAsObject().toString();
         } else {
             id = objectId.toString();
         }
     }
 
 
+
+    /**
+     * Identifies which fields need to be set
+     * @param pc
+     */
+    private void setFields( Persistable pc){
+        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
+        ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
+
+        if( action == Action.CREATE){
+            // need to include all loaded fields
+            String[] fieldNames = NucleusJDOHelper.getLoadedFields( pc, pm);
+            for(String fieldName : fieldNames) {
+                int position = op.getClassMetaData().getAbsolutePositionOfMember(fieldName);
+                Object field = op.provideField(position);
+                AbstractMemberMetaData ammd = op.getClassMetaData().getMetaDataForManagedMemberAtAbsolutePosition(position);
+
+                if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
+                    // only add persistable fields to the list of fields
+                    fields.add(Field.newField(field, (FieldMetaData) ammd));
+                } else {
+                    NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
+                }
+            }
+        }
+    }
+
+
     @Override
     public String toString() {
-        return "Object{" +
+        return "Entity{" +
                 "action=" + action +
                 ", classname='" + classname + '\'' +
-                ", id=" + id +
+                ", id='" + id + '\'' +
                 ", version='" + version + '\'' +
-                ", fields=" + Arrays.toString(fields) +
+                ", fields=" + fields +
                 ", username='" + username + '\'' +
                 ", dateModified=" + dateModified +
                 '}';

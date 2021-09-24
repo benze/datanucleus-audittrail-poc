@@ -2,25 +2,20 @@ package mydomain.model;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 
 @PersistenceCapable(detachable="true")
+@Version(strategy= VersionStrategy.VERSION_NUMBER, column="VERSN")
 public class Telephone
 {
-
-    @PrimaryKey
-    Long id;
-
     String number;
+    CountryCode countryCode;
 
-    public Telephone(long id, String number)
+    public Telephone(String number, CountryCode countryCode)
     {
-        this.id = id;
         this.number = number;
-    }
-
-    public Long getId()
-    {
-        return id;
+        this.countryCode = countryCode;
     }
 
     public String getNumber()

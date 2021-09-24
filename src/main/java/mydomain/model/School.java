@@ -5,10 +5,13 @@ import javax.jdo.annotations.Join;
 import javax.jdo.annotations.Order;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 import java.util.List;
 import java.util.Set;
 
 @PersistenceCapable(detachable="true")
+@Version(strategy= VersionStrategy.VERSION_NUMBER, column="VERSN")
 public class School
 {
     String name;

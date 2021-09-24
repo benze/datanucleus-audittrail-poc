@@ -29,7 +29,9 @@ public class SimpleTest
             tx.begin();
 
             Student p = new Student("First Student");
+            p.setAddress(new Address(new Street[]{new Street("Regina")}));
             pm.makePersistent(p);
+            p.setAddress( new Address(new Street[]{new Street("Victoria")}));
 
             tx.commit();
         }

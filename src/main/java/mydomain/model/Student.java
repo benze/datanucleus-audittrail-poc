@@ -4,6 +4,8 @@ import javax.jdo.annotations.*;
 import java.util.Map;
 
 @PersistenceCapable(detachable="true")
+@Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME, column="TYP", indexed="true")
+@Version(strategy=VersionStrategy.VERSION_NUMBER, column="VERSN")
 public class Student
 {
     String name;

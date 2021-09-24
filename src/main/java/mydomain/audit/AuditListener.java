@@ -27,6 +27,7 @@ public class AuditListener implements CreateLifecycleListener,
     DeleteLifecycleListener, LoadLifecycleListener, StoreLifecycleListener, TransactionEventListener
 {
 
+    NucleusLogger logger = NucleusLogger.getLoggerInstance("Console");
 
     Stack<Entity> modifications = new Stack<>();
 
@@ -82,15 +83,13 @@ public class AuditListener implements CreateLifecycleListener,
     }
 
     public void postStore(InstanceLifecycleEvent event) {
-        NucleusLogger.GENERAL.info("Audit : postStore for " +
-                ((Persistable) event.getSource()).dnGetObjectId());
-
+        Persistable pc = (Persistable)event.getSource();
+        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
 
         if (!(event.getSource() instanceof Persistable)) {
             NucleusLogger.GENERAL.debug("Nothing to do. No persistable object found. : " + event.getSource().getClass().getName());
             return;
         }
-        Persistable pc = (Persistable) event.getSource();
         modifications.push(new Entity(pc));
     }
 
@@ -110,6 +109,8 @@ public class AuditListener implements CreateLifecycleListener,
     public void transactionCommitted()
     {
         NucleusLogger.GENERAL.info("Audit : TXN COMMITTED");
+        logger.info(modifications.toString());
+
     }
     public void transactionPreRollBack() {}
     public void transactionRolledBack() {}

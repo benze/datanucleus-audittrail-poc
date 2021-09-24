@@ -2,8 +2,11 @@ package mydomain.model;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 
 @PersistenceCapable(detachable="true")
+@Version(strategy= VersionStrategy.VERSION_NUMBER, column="VERSN")
 public class Street
 {
     String name;
