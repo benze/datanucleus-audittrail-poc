@@ -1,20 +1,23 @@
 package org.datanucleus.test;
 
+import mydomain.audit.AuditListener;
+import mydomain.model.Address;
+import mydomain.model.Street;
+import mydomain.model.Student;
+import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.identity.DatastoreIdImplKodo;
-import javax.jdo.*;
+import org.datanucleus.util.NucleusLogger;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Transaction;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import mydomain.model.*;
-import mydomain.audit.AuditListener;
-import org.datanucleus.util.NucleusLogger;
-import org.datanucleus.api.jdo.JDOTransaction;
-import org.junit.jupiter.api.Test;
 
-public class SimpleTest
-{
-    @Test
-    public void testSimple()
-    {
+public class SimpleTest {
+    //    @Test
+    public void testSimple() {
         NucleusLogger.GENERAL.info(">> test START");
         PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
 
@@ -23,27 +26,21 @@ public class SimpleTest
         AuditListener audit = new AuditListener();
         pm.addInstanceLifecycleListener(audit, null);
         Transaction tx = pm.currentTransaction();
-        ((JDOTransaction)tx).registerEventListener(audit);
-        try
-        {
+        ((JDOTransaction) tx).registerEventListener(audit);
+        try {
             tx.begin();
 
             Student p = new Student("First Student");
             p.setAddress(new Address(new Street[]{new Street("Regina")}));
             pm.makePersistent(p);
-            p.setAddress( new Address(new Street[]{new Street("Victoria")}));
+            p.setAddress(new Address(new Street[]{new Street("Victoria")}));
 
             tx.commit();
-        }
-        catch (Throwable thr)
-        {
+        } catch (Throwable thr) {
             NucleusLogger.GENERAL.error(">> Exception in test", thr);
             fail("Failed test : " + thr.getMessage());
-        }
-        finally 
-        {
-            if (tx.isActive())
-            {
+        } finally {
+            if (tx.isActive()) {
                 tx.rollback();
             }
             pm.close();
@@ -55,12 +52,11 @@ public class SimpleTest
         audit = new AuditListener();
         pm.addInstanceLifecycleListener(audit, null);
         tx = pm.currentTransaction();
-        ((JDOTransaction)tx).registerEventListener(audit);
-        try
-        {
+        ((JDOTransaction) tx).registerEventListener(audit);
+        try {
             tx.begin();
 
-            Object id = new DatastoreIdImplKodo( Student.class.getName(), 1);
+            Object id = new DatastoreIdImplKodo(Student.class.getName(), 1);
 
             Student p = pm.getObjectById(Student.class, id);
             p.getName();
@@ -75,16 +71,11 @@ public class SimpleTest
             NucleusLogger.GENERAL.info(">> non-tx update");
             p.setName("Third Student");
             NucleusLogger.GENERAL.info(">> non-tx update done");
-        }
-        catch (Throwable thr)
-        {
+        } catch (Throwable thr) {
             NucleusLogger.GENERAL.error(">> Exception in test", thr);
             fail("Failed test : " + thr.getMessage());
-        }
-        finally 
-        {
-            if (tx.isActive())
-            {
+        } finally {
+            if (tx.isActive()) {
                 tx.rollback();
             }
             pm.close();

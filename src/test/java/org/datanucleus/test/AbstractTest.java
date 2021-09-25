@@ -19,6 +19,8 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 
@@ -28,35 +30,60 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 abstract public class AbstractTest {
 
+    @FunctionalInterface
+    public interface TransactionContent {
+        public void execute(PersistenceManager pm);
+    }
+
     protected AuditListener audit;
-    protected PersistenceManager pm;
-    protected Transaction tx;
 
-
+    /**
+     * Clear the embedded DB before each test execution to ensure that IDs are reset to 1
+     */
     @BeforeEach
-    protected void setupTransaction(){
-        NucleusLogger.GENERAL.info(">> test START");
+    protected void resetDatabase() {
         PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
-
-        // Create of object
-        pm = pmf.getPersistenceManager();
-        audit = new AuditListener();
-        pm.addInstanceLifecycleListener(audit, null);
-        tx = pm.currentTransaction();
-        ((JDOTransaction) tx).registerEventListener(audit);
+        try (PersistenceManager pm = pmf.getPersistenceManager()) {
+            ((Connection) pm.getDataStoreConnection()).prepareStatement("DROP ALL OBJECTS").execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     @AfterEach
     protected void endTransaction() throws IOException {
-        if( tx.isActive())
-            tx.rollback();
-        pm.close();
-
         // check that the datatrail log is correct
         NucleusLogger.GENERAL.debug(getJson(audit.getModifications()));
+
+    }
+
+    protected void executeTx(TransactionContent transactionContent) {
+        NucleusLogger.GENERAL.info(">> test START");
+        PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
+
+        // Create of object
+        PersistenceManager pm = pmf.getPersistenceManager();
+        audit = new AuditListener();
+        pm.addInstanceLifecycleListener(audit, null);
+        Transaction tx = pm.currentTransaction();
+        ((JDOTransaction) tx).registerEventListener(audit);
+        try {
+            tx.begin();
+            transactionContent.execute(pm);
+            tx.commit();
+        } catch (Throwable thr) {
+            NucleusLogger.GENERAL.error(">> Exception in test", thr);
+            fail("Failed test : " + thr.getMessage());
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            pm.close();
+        }
 
     }
 
@@ -69,7 +96,7 @@ abstract public class AbstractTest {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         StringWriter sw = new StringWriter();
-        for( Entity entity : entities)
+        for (Entity entity : entities)
             mapper.writeValue(sw, entity);
         return sw.toString();
     }
@@ -91,8 +118,7 @@ abstract public class AbstractTest {
         IsPojo<Field> field = pojo(Field.class)
                 .withProperty("name", is(name))
                 .withProperty("type", hasToString(type.toString()))
-                .withProperty("prev", nullValue())
-        ;
+                .withProperty("prev", nullValue());
 
         return field;
 
@@ -117,7 +143,7 @@ abstract public class AbstractTest {
                 .withProperty("type", hasToString(type.toString()))
                 .withProperty("prev", nullValue())
                 .withProperty("className", is(clazz.getName()));
-                ;
+        ;
 
         return field;
 
