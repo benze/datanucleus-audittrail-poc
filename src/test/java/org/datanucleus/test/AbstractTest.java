@@ -34,6 +34,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 abstract public class AbstractTest {
 
+    NucleusLogger CONSOLE = NucleusLogger.getLoggerInstance("Console");
+
     @FunctionalInterface
     public interface TransactionContent {
         public void execute(PersistenceManager pm);
@@ -56,8 +58,11 @@ abstract public class AbstractTest {
 
     @AfterEach
     protected void endTransaction() throws IOException {
+        System.out.println("Asdfasdf");
+        CONSOLE.info("info log");
+        CONSOLE.debug("debug log");
         // check that the datatrail log is correct
-        NucleusLogger.GENERAL.debug(getJson(audit.getModifications()));
+        CONSOLE.debug(getJson(audit.getModifications()));
 
     }
 
@@ -93,6 +98,7 @@ abstract public class AbstractTest {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
 
         StringWriter sw = new StringWriter();
         for (Entity entity : entities)
@@ -134,6 +140,31 @@ abstract public class AbstractTest {
         return field;
 
     }
+
+    protected IsPojo getMapElement(Field.Type keyType, Class keyClazz, String keyValue, Field.Type valueType, Class valueClazz, String valueValue) {
+
+        IsPojo<Field> key = pojo(Field.class)
+                .withProperty("value", is(keyValue))
+                .withProperty("type", hasToString(keyType.toString()))
+                .withProperty("prev", nullValue())
+                .withProperty("className", is(keyClazz.getName()));
+
+        IsPojo<Field> value = pojo(Field.class)
+                .withProperty("value", is(valueValue))
+                .withProperty("type", hasToString(valueType.toString()))
+                .withProperty("prev", nullValue())
+                .withProperty("className", is(valueClazz.getName()));
+        ;
+
+        IsPojo mapEntry = pojo(Object.class)
+                .withProperty("key", is(key))
+                .withProperty("value", is(value));
+
+        return mapEntry;
+
+    }
+
+
 
     protected IsPojo<Field> getField(Field.Type type, Class clazz, String name, String value) {
         IsPojo<Field> field = pojo(Field.class)

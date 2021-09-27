@@ -9,6 +9,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Value;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
+import java.util.HashMap;
 import java.util.Map;
 
 @PersistenceCapable(detachable="true")
@@ -22,12 +23,13 @@ public class Student
     @Column(name = "ADDRESS_ID")
     Address address;
 
-    Map<String, String> marks;
+    Map<String, String> marks = new HashMap<>();
+
 
     @Join(column = "STUDENT_ID")
     @Key(column = "TELEPHONE_TYPE")
     @Value(column = "TELEPHONE_ID")
-    Map<TelephoneType, Telephone> telephoneNbs;
+    Map<TelephoneType, Telephone> telephoneNbs = new HashMap<>();
 
     public Student(String name)
     {
@@ -49,5 +51,21 @@ public class Student
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Map<TelephoneType, Telephone> getTelephoneNbs() {
+        return telephoneNbs;
+    }
+
+    public void addTelephoneNb(TelephoneType type,  Telephone telephone) {
+        telephoneNbs.put(type,telephone);
+    }
+
+    public Map<String, String> getMarks() {
+        return marks;
+    }
+
+    public void addMark(String subject, String grade) {
+        this.marks.put(subject, grade);
     }
 }

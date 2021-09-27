@@ -37,7 +37,7 @@ abstract public class Field {
         }
 
         // default case, treat as primitive field
-        return new PrimitiveField(field, null);
+        return new PrimitiveField(field != null ? field : null, null);
     }
 
 
@@ -55,8 +55,10 @@ abstract public class Field {
             return new MapField(field, fmd);
         } else if( fmd.hasArray() || fmd.hasCollection()) {
             return new CollectionField(field, fmd);
-        } else if (field instanceof Persistable) {
-            return new ReferenceField((Persistable) field, fmd.getName());
+        } else if (fmd.hasMap()){
+            return new MapField(field, fmd);
+        } else if (Persistable.class.isAssignableFrom(fmd.getType())) {
+            return new ReferenceField((Persistable) field, fmd);
         }
 
         // default case, treat as primitive field

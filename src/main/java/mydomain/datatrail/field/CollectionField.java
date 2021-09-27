@@ -19,12 +19,14 @@ public class CollectionField extends Field{
         super(fmd.getName(),null);
         type = Type.COLLECTION;
 
-        if( fmd.hasArray()){
-            addElements(Arrays.asList((Object []) field));
-        }
+        if( field != null ) {
+            if (fmd.hasArray()) {
+                addElements(Arrays.asList((Object[]) field));
+            }
 
-        if( fmd.hasCollection() ){
-            addElements((Collection) field);
+            if (fmd.hasCollection()) {
+                addElements((Collection) field);
+            }
         }
     }
 
