@@ -8,6 +8,7 @@ import com.spotify.hamcrest.pojo.IsPojo;
 import mydomain.audit.AuditListener;
 import mydomain.datatrail.Entity;
 import mydomain.datatrail.field.Field;
+import mydomain.model.ITrailDesc;
 import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.util.NucleusLogger;
 import org.junit.jupiter.api.AfterEach;
@@ -119,6 +120,10 @@ abstract public class AbstractTest {
                 .withProperty("dateModified", any(Instant.class))
                 .withProperty("username", anything());
 
+        if( ITrailDesc.class.isAssignableFrom(clazz)) {
+            entity = entity.withProperty("description", anything());
+        }
+
         return entity;
 
     }
@@ -141,6 +146,10 @@ abstract public class AbstractTest {
                 .withProperty("className", is(clazz.getName()));
         ;
 
+        if( ITrailDesc.class.isAssignableFrom(clazz)) {
+            field = field.withProperty("description", anything());
+        }
+
         return field;
 
     }
@@ -152,6 +161,10 @@ abstract public class AbstractTest {
                 .withProperty("type", hasToString(keyType.toString()))
                 .withProperty("prev", nullValue())
                 .withProperty("className", is(keyClazz.getName()));
+        if( ITrailDesc.class.isAssignableFrom(keyClazz)) {
+            key = key.withProperty("description", anything());
+        }
+
 
         IsPojo<Field> value = pojo(Field.class)
                 .withProperty("value", is(valueValue))
@@ -159,6 +172,9 @@ abstract public class AbstractTest {
                 .withProperty("prev", nullValue())
                 .withProperty("className", is(valueClazz.getName()));
         ;
+        if( ITrailDesc.class.isAssignableFrom(valueClazz)) {
+            value = value.withProperty("description", anything());
+        }
 
         IsPojo mapEntry = pojo(Object.class)
                 .withProperty("key", is(key))
@@ -178,6 +194,10 @@ abstract public class AbstractTest {
                 .withProperty("prev", nullValue())
                 .withProperty("className", is(clazz.getName()));
         ;
+
+        if( ITrailDesc.class.isAssignableFrom(clazz)) {
+            field = field.withProperty("description", anything());
+        }
 
         return field;
 

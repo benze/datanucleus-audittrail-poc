@@ -4,29 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import mydomain.model.ITrailDesc;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.metadata.FieldMetaData;
-import org.datanucleus.state.ObjectProvider;
 
 public class ReferenceField extends Field {
 
-    protected String desc;
+    protected String description;
 
     protected ReferenceField(Persistable field, FieldMetaData fmd) {
         super(fmd != null ? fmd.getName() : null, field != null ? field.getClass().getName() : null );
         type = Type.REF;
         setValue(field);
-        setDesc(field);
+        setDescription(field);
 
     }
 
     @JsonProperty("desc")
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
 
-    private void setDesc(Persistable field){
+    private void setDescription(Persistable field){
         if( field != null && field instanceof ITrailDesc){
-            desc = ((ITrailDesc)field).minimalTxtDesc();
+            description = ((ITrailDesc)field).minimalTxtDesc();
         }
     }
 

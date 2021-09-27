@@ -48,4 +48,7 @@ public class PrimitiveTest extends AbstractTest {
         // check that the datatrail log is correct
         NucleusLogger.GENERAL.info(getJson(audit.getModifications()));
     }
+
+
+
 }

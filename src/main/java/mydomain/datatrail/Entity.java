@@ -2,6 +2,7 @@ package mydomain.datatrail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import mydomain.datatrail.field.Field;
+import mydomain.model.ITrailDesc;
 import org.datanucleus.api.jdo.NucleusJDOHelper;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.identity.DatastoreId;
@@ -32,6 +33,7 @@ public class Entity {
     protected List<Field> fields = new ArrayList<>();
     protected String username;
     protected Instant dateModified;
+    protected String description;
 
 
 
@@ -43,6 +45,10 @@ public class Entity {
         this.className = op.getClassMetaData().getFullClassName();
         this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
         this.dateModified = Instant.now();
+
+        if( pc instanceof ITrailDesc){
+            description = ((ITrailDesc)pc).minimalTxtDesc();
+        }
 
         setFields(pc);
     }
@@ -154,5 +160,10 @@ public class Entity {
     @JsonProperty
     public Instant getDateModified() {
         return dateModified;
+    }
+
+    @JsonProperty("desc")
+    public String getDescription() {
+        return description;
     }
 }
