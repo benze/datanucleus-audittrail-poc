@@ -1,6 +1,5 @@
 package org.datanucleus.test;
 
-import com.google.common.collect.Sets;
 import com.spotify.hamcrest.pojo.IsPojo;
 import mydomain.datatrail.Entity;
 import mydomain.datatrail.field.Field;
@@ -8,15 +7,10 @@ import mydomain.model.Address;
 import mydomain.model.School;
 import mydomain.model.Street;
 import mydomain.model.Student;
-import org.datanucleus.util.NucleusLogger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Transaction;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class CollectionTest extends AbstractTest {
@@ -120,7 +113,6 @@ public class CollectionTest extends AbstractTest {
                                         getListElement(Field.Type.REF, Student.class, "1")
                                 ))
                 ));
-
 
 
         assertThat(audit.getModifications(), hasItem(

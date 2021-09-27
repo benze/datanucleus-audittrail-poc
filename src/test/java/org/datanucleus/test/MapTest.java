@@ -34,6 +34,7 @@ public class MapTest extends AbstractTest {
 
             Student student = new Student("student");
             student.addTelephoneNb(TelephoneType.HOME, new Telephone("514-555-5555", cc));
+            student.addMark("english", "A");
 
             pm.makePersistent(student);
         });
