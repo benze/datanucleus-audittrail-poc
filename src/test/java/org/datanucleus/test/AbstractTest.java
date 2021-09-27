@@ -39,7 +39,7 @@ abstract public class AbstractTest {
         public void execute(PersistenceManager pm);
     }
 
-    protected AuditListener audit;
+    protected AuditListener audit = new AuditListener();
 
     /**
      * Clear the embedded DB before each test execution to ensure that IDs are reset to 1
@@ -67,7 +67,6 @@ abstract public class AbstractTest {
 
         // Create of object
         PersistenceManager pm = pmf.getPersistenceManager();
-        audit = new AuditListener();
         pm.addInstanceLifecycleListener(audit, null);
         Transaction tx = pm.currentTransaction();
         ((JDOTransaction) tx).registerEventListener(audit);

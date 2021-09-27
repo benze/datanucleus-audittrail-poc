@@ -18,7 +18,7 @@
             <property name="javax.jdo.option.RestoreValues	" value="true"/>  <!-- required for DataTrail -->
 
             <property name="datanucleus.schema.autoCreateAll" value="true"/>
-            <property name="datanucleus.schema.generateDatabase.mode" value="drop-and-create"/>
+            <property name="datanucleus.generateSchema.database.mode" value="drop-and-create"/>
 
             <property name="datanucleus.datastoreIdentityType" value="kodo"/>
 
