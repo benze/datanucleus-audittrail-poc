@@ -58,23 +58,26 @@ abstract public class AbstractTest {
 
     @AfterEach
     protected void endTransaction() throws IOException {
-        System.out.println("Asdfasdf");
-        CONSOLE.info("info log");
-        CONSOLE.debug("debug log");
         // check that the datatrail log is correct
         CONSOLE.debug(getJson(audit.getModifications()));
 
     }
 
     protected void executeTx(TransactionContent transactionContent) {
+        executeTx(transactionContent, true);
+    }
+
+    protected void executeTx(TransactionContent transactionContent, boolean attachListener) {
         NucleusLogger.GENERAL.info(">> test START");
         PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
 
         // Create of object
         PersistenceManager pm = pmf.getPersistenceManager();
-        pm.addInstanceLifecycleListener(audit, null);
         Transaction tx = pm.currentTransaction();
-        ((JDOTransaction) tx).registerEventListener(audit);
+        if( attachListener) {
+            pm.addInstanceLifecycleListener(audit, null);
+            ((JDOTransaction) tx).registerEventListener(audit);
+        }
         try {
             tx.begin();
             transactionContent.execute(pm);
@@ -88,7 +91,8 @@ abstract public class AbstractTest {
             }
             pm.close();
         }
-
+        pmf.getDataStoreCache().evictAll();
+        pmf.close();
     }
 
     protected String getJson(List<Entity> entities) throws IOException {
