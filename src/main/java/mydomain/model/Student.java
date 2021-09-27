@@ -15,7 +15,7 @@ import java.util.Map;
 @PersistenceCapable(detachable="true")
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME, column="TYP", indexed="true")
 @Version(strategy=VersionStrategy.VERSION_NUMBER, column="VERSN")
-public class Student
+public class Student implements ITrailDesc
 {
     String name;
 
@@ -67,5 +67,10 @@ public class Student
 
     public void addMark(String subject, String grade) {
         this.marks.put(subject, grade);
+    }
+
+    @Override
+    public String minimalTxtDesc() {
+        return name;
     }
 }
