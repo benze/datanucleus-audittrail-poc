@@ -4,7 +4,6 @@ import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.Order;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 import java.util.List;

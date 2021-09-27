@@ -1,6 +1,14 @@
 package mydomain.model;
 
-import javax.jdo.annotations.*;
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.Join;
+import javax.jdo.annotations.Key;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Value;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 import java.util.Map;
 
 @PersistenceCapable(detachable="true")
