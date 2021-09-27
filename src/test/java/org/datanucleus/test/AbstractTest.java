@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spotify.hamcrest.pojo.IsPojo;
+import h2.H2Server;
 import mydomain.audit.AuditListener;
 import mydomain.datatrail.Entity;
 import mydomain.datatrail.field.Field;
 import mydomain.model.ITrailDesc;
 import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.util.NucleusLogger;
+import org.h2.server.TcpServer;
+import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import javax.jdo.JDOHelper;
@@ -35,30 +39,32 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 abstract public class AbstractTest {
 
-    NucleusLogger CONSOLE = NucleusLogger.getLoggerInstance("Console");
+    static NucleusLogger CONSOLE = NucleusLogger.getLoggerInstance("Console");
 
     @FunctionalInterface
     public interface TransactionContent {
         public void execute(PersistenceManager pm);
     }
 
+    PersistenceManagerFactory pmf;
     protected AuditListener audit = new AuditListener();
+
+    @BeforeAll
+    public static void enableH2Webserver(){
+        CONSOLE.info(H2Server.getInstance());
+    }
 
     /**
      * Clear the embedded DB before each test execution to ensure that IDs are reset to 1
      */
     @BeforeEach
     protected void resetDatabase() {
-        PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
-        try (PersistenceManager pm = pmf.getPersistenceManager()) {
-            ((Connection) pm.getDataStoreConnection()).prepareStatement("DROP ALL OBJECTS").execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
     }
 
     @AfterEach
     protected void endTransaction() throws IOException {
+        pmf.close();
         // check that the datatrail log is correct
         CONSOLE.debug(getJson(audit.getModifications()));
 
@@ -70,7 +76,6 @@ abstract public class AbstractTest {
 
     protected void executeTx(TransactionContent transactionContent, boolean attachListener) {
         NucleusLogger.GENERAL.info(">> test START");
-        PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("MyTest");
 
         // Create of object
         PersistenceManager pm = pmf.getPersistenceManager();
@@ -93,7 +98,6 @@ abstract public class AbstractTest {
             pm.close();
         }
         pmf.getDataStoreCache().evictAll();
-        pmf.close();
     }
 
     protected String getJson(List<Entity> entities) throws IOException {
