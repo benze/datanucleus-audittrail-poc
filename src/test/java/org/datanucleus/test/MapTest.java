@@ -12,6 +12,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import static mydomain.datatrail.Entity.Action.CREATE;
@@ -62,7 +63,7 @@ public class MapTest extends AbstractTest {
                 ));
 
 
-        List<Entity> entities = audit.getModifications();
+        Collection<Entity> entities = audit.getModifications();
         assertThat(entities, containsInAnyOrder(student, cc, telephone));
     }
 

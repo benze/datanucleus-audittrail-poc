@@ -2,10 +2,13 @@ package org.datanucleus.test;
 
 import mydomain.datatrail.Entity;
 import mydomain.model.Street;
+import mydomain.model.Student;
+import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.datanucleus.util.NucleusLogger;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,12 +25,13 @@ public class PrimitiveTest extends AbstractTest {
         executeTx((pm) -> {
             Street street = new Street("Regina");
             pm.makePersistent(street);
+            street.setName("Calgary");
         });
 
 
-        List<Entity> entities = audit.getModifications();
+        Collection<Entity> entities = audit.getModifications();
         assertThat(entities, hasSize(1));
-        Entity entity = entities.get(0);
+        Entity entity = entities.stream().findFirst().get();
 
         assertThat(entity, allOf(
                 hasProperty("action", hasToString("CREATE")),
@@ -40,6 +44,11 @@ public class PrimitiveTest extends AbstractTest {
         assertThat(entity.getFields().get(0), allOf(
                 hasProperty("name", is("name")),
                 hasProperty("type", hasToString("PRIMITIVE")),
+                hasProperty("value", is("Calgary")),
+                hasProperty("className", is(String.class.getName()))
+        ));
+    }
+
                 hasProperty("value", is("Regina")),
                 hasProperty("className", is(String.class.getName()))
         ));

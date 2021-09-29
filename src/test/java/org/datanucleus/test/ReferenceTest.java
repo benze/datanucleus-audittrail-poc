@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
@@ -32,7 +33,7 @@ public class ReferenceTest extends AbstractTest {
             pm.makePersistent(telephone);
         });
 
-        List<Entity> entities = audit.getModifications();
+        Collection<Entity> entities = audit.getModifications();
 
         final IsPojo<Entity> countryCode =
                 pojo(Entity.class)

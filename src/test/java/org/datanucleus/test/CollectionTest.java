@@ -7,12 +7,14 @@ import mydomain.model.Address;
 import mydomain.model.School;
 import mydomain.model.Street;
 import mydomain.model.Student;
+import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +51,7 @@ public class CollectionTest extends AbstractTest {
                 ));
 
 
-        List<Entity> entities = audit.getModifications();
+        Collection<Entity> entities = audit.getModifications();
         assertThat(entities, containsInAnyOrder(street, address));
     }
 

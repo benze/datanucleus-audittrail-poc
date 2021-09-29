@@ -29,13 +29,27 @@ public class AuditListener implements CreateLifecycleListener,
 
     NucleusLogger logger = NucleusLogger.getLoggerInstance("Console");
 
-    Stack<Entity> modifications = new Stack<>();
-
-
-    public AuditListener()
-    {
+//    Stack<Entity> modifications = new Stack<>();
+    Map<Object, Entity> modifications = new HashMap<Object, Entity>() {
+        @Override
+        public Entity put(Object key, Entity value) {
+            if(key instanceof Persistable){
+                key = ((Persistable)key).dnGetObjectId();
     }
+return super.put(key, value);
+        }
 
+        @Override
+        public Entity get(Object key) {
+            if(key instanceof Persistable){
+                key = ((Persistable)key).dnGetObjectId();
+            }
+            return super.get(key);
+        }
+    };
+
+
+    pub
     public void postCreate(InstanceLifecycleEvent event)
     {
         NucleusLogger.GENERAL.info("Audit : create for " +
@@ -90,7 +104,7 @@ public class AuditListener implements CreateLifecycleListener,
             NucleusLogger.GENERAL.debug("Nothing to do. No persistable object found. : " + event.getSource().getClass().getName());
             return;
         }
-        modifications.push(new Entity(pc));
+        modifications.put(pc, new Entity(pc, action));
     }
 
     public void transactionStarted()
@@ -119,7 +133,7 @@ public class AuditListener implements CreateLifecycleListener,
     public void transactionReleaseSavepoint(String name) {}
     public void transactionRollbackToSavepoint(String name) {}
 
-    public Stack<Entity> getModifications() {
-        return modifications;
+    public Collection<Entity> getModifications() {
+        return modifications.values();
     }
 }

@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
@@ -100,7 +101,7 @@ abstract public class AbstractTest {
         pmf.getDataStoreCache().evictAll();
     }
 
-    protected String getJson(List<Entity> entities) throws IOException {
+    protected String getJson(Collection<Entity> entities) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();
         mapper.registerModule(module);
