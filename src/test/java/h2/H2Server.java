@@ -13,24 +13,26 @@ public class H2Server {
 
     static {
         try {
-            instance = new H2Server();
+            boolean enableH2 = System.getProperty("enableH2") != null;
+            if( enableH2 )
+                instance = new H2Server();
+            else
+                instance = null;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    private Server webServer;
+    private Server h2Server;
     private Server tcpServer;
 
     protected H2Server() throws SQLException {
-        webServer = Server.createWebServer();
+        h2Server = Server.createWebServer();
         tcpServer = Server.createTcpServer();
-        CONSOLE.info("H2: " + webServer.getURL());
-        CONSOLE.info("H2 Status: " + webServer.getStatus());
-        if (!webServer.isRunning(false))
-            webServer.start();
-        if( !tcpServer.isRunning(false))
-            tcpServer.start();
+        CONSOLE.info("H2: " + h2Server.getURL());
+        CONSOLE.info("H2 Status: " + h2Server.getStatus());
+        if (!h2Server.isRunning(false))
+            h2Server.start();
     }
 
     static public H2Server getInstance() {
@@ -40,8 +42,8 @@ public class H2Server {
     @Override
     public String toString() {
         return "H2Server{" +
-                "webServer=" + webServer.getStatus() +
-                " :: tcpServer =" + tcpServer.getStatus() +
+                "h2Server=" + h2Server.getURL() +
+                " :: status=" + h2Server.getStatus() +
                 '}';
     }
 }
