@@ -1,6 +1,7 @@
 package mydomain.datatrail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import mydomain.datanucleus.ExtendedReferentialStateManagerImpl;
 import mydomain.datatrail.field.Field;
 import mydomain.model.ITrailDesc;
 import org.datanucleus.api.jdo.NucleusJDOHelper;
@@ -13,6 +14,7 @@ import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.util.NucleusLogger;
 
+import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -36,10 +38,58 @@ public class Entity {
     protected String description;
 
 
-
+    /**
+     * Default delegator to a create/update Entity
+     * @param pc
+     */
     public Entity(Persistable pc) {
+        this(pc, null);
+    }
+
+    public Entity(Persistable pc, Action action){
         ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
-        setAction( op.getLifecycleState() );
+
+        setId(pc);
+        this.action = action;
+        this.className = op.getClassMetaData().getFullClassName();
+        this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
+        this.dateModified = Instant.now();
+
+        if( pc instanceof ITrailDesc){
+            description = ((ITrailDesc)pc).minimalTxtDesc();
+        }
+
+        // set the fields for the entity
+        switch(action){
+            case CREATE:
+                setCreateFields(pc);
+                break;
+            case DELETE:
+                setDeleteFields(pc);
+                break;
+            case UPDATE:
+                throw new UnsupportedOperationException("UPDATE not yet supported");
+        }
+    }
+
+
+    /**
+     *
+     * @param pc
+     * @param delete true if pc is being deleted.  False otherwise (ie: saved/updated/etc).
+     */
+    public Entity(Persistable pc, boolean delete) {
+        ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
+
+        // if the object is being deleted, the constructor must be called before the object is actually deleted from the
+        // datastore, and before the object's state has registered it as being "in deletion", or will be impossible to retrieve
+        if( delete ){
+            action = Action.DELETE;
+        } else {
+            // use the lifecycle to identify if the object is being created or updated
+            // TODO use JDOHelper.getObjectState() instead of DN LifecycleState
+            setAction(op.getLifecycleState());
+        }
         setId(pc);
 
         this.className = op.getClassMetaData().getFullClassName();
@@ -50,7 +100,17 @@ public class Entity {
             description = ((ITrailDesc)pc).minimalTxtDesc();
         }
 
-        setFields(pc);
+        // set the fields for the entity
+        switch(action){
+            case CREATE:
+                setCreateFields(pc);
+                break;
+            case DELETE:
+                setDeleteFields(pc);
+                break;
+            case UPDATE:
+                throw new UnsupportedOperationException("UPDATE not yet supported");
+        }
     }
 
 
@@ -90,7 +150,7 @@ public class Entity {
      * Identifies which fields need to be set
      * @param pc
      */
-    private void setFields( Persistable pc){
+    private void setCreateFields(Persistable pc){
         PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
         ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
 
@@ -111,6 +171,33 @@ public class Entity {
             }
         }
     }
+
+
+    /**
+     * Identifies which fields need to be set when an object is being deleted
+     * @param pc
+     */
+    private void setDeleteFields(Persistable pc){
+        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
+        ExtendedReferentialStateManagerImpl op = (ExtendedReferentialStateManagerImpl)pc.dnGetStateManager();
+
+        if( action == Action.DELETE){
+            // need to include all loaded fields
+            int[] absoluteFieldPositions = op.getClassMetaData().getAllMemberPositions();
+            for(int position : absoluteFieldPositions) {
+                Object field = op.provideSavedField(position);
+                AbstractMemberMetaData ammd = op.getClassMetaData().getMetaDataForManagedMemberAtAbsolutePosition(position);
+
+                if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
+                    // only add persistable fields to the list of fields
+                    fields.add(Field.newField(field, (FieldMetaData) ammd));
+                } else {
+                    NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
+                }
+            }
+        }
+    }
+
 
 
     @Override
