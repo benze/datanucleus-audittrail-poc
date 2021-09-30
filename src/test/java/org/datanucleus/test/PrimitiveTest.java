@@ -49,6 +49,38 @@ public class PrimitiveTest extends AbstractTest {
         ));
     }
 
+
+    @Test
+    public void deletePrimitive() throws IOException {
+        executeTx((pm) -> {
+            Street street = new Street("Regina");
+            pm.makePersistent(street);
+        }, false);
+
+        executeTx(pm -> {
+            Object id = new DatastoreIdImplKodo(Street.class.getName(), 1);
+            Street p = pm.getObjectById(Street.class, id);
+            p.setName("aaaa");
+
+            pm.deletePersistent(p);
+        });
+
+
+        Collection<Entity> entities = audit.getModifications();
+        assertThat(entities, hasSize(1));
+        Entity entity = entities.stream().findFirst().get();
+
+        assertThat(entity, allOf(
+                hasProperty("action", hasToString("DELETE")),
+                hasProperty("id", is("1")),
+                hasProperty("dateModified", notNullValue()),
+                hasProperty("fields", hasSize(1))
+        ));
+
+
+        assertThat(entity.getFields().get(0), allOf(
+                hasProperty("name", is("name")),
+                hasProperty("type", hasToString("PRIMITIVE")),
                 hasProperty("value", is("Regina")),
                 hasProperty("className", is(String.class.getName()))
         ));
@@ -57,6 +89,7 @@ public class PrimitiveTest extends AbstractTest {
         // check that the datatrail log is correct
         NucleusLogger.GENERAL.info(getJson(audit.getModifications()));
     }
+
 
 
 
