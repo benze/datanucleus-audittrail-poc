@@ -1,9 +1,12 @@
 package mydomain.model;
 
 import javax.jdo.annotations.Element;
+import javax.jdo.annotations.ForeignKey;
+import javax.jdo.annotations.ForeignKeyAction;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.Order;
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 import java.util.List;
@@ -18,6 +21,7 @@ public class School
     // 1-n
     @Element( column = "SCHOOL_ID")
     @Order(column = "SCHOOL_ADDRESS_ORDR")
+    @Persistent(dependentElement = "true")
     List<Address> addresses;
 
     // n-n mapping table
