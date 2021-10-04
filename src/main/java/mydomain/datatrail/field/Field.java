@@ -26,43 +26,49 @@ abstract public class Field {
     }
 
 
-    /**
-     * No metadata associated to the field, so can only store reference and primitive values
-     * @param field
-     * @return
-     */
+    // TODO temporary to be deleted.  Used to make code compilable during refactor process
+    @Deprecated
     static public Field newField(Object field) {
+        return newField(field, null);
+    }
+
+        /**
+         * No metadata associated to the field, so can only store reference and primitive values
+         * @param field
+         * @return
+         */
+    static public Field newField(Object field, Object prevValue) {
         if (field instanceof Persistable) {
-            return new ReferenceField((Persistable) field, null);
+            return new ReferenceField((Persistable) field,  (Persistable) prevValue, null);
         }
 
         // default case, treat as primitive field
-        return new PrimitiveField(field != null ? field : null, null);
+        return new PrimitiveField(field != null ? field : null, prevValue,null);
     }
 
 
     /**
      *
-     * @param field
+     * @param currentValue
      * @param fmd
      * @return
      */
-    static public Field newField(Object field, FieldMetaData fmd){
+    static public Field newField(Object currentValue, Object prevValue, FieldMetaData fmd){
         if( fmd == null )
-            return newField(field);
+            return newField(currentValue, prevValue);
 
         if( fmd.hasMap()) {
-            return new MapField(field, fmd);
+            return new MapField(currentValue, fmd);
         } else if( fmd.hasArray() || fmd.hasCollection()) {
-            return new CollectionField(field, fmd);
+            return new CollectionField(currentValue, fmd);
         } else if (fmd.hasMap()){
-            return new MapField(field, fmd);
+            return new MapField(currentValue, fmd);
         } else if (Persistable.class.isAssignableFrom(fmd.getType())) {
-            return new ReferenceField((Persistable) field, fmd);
+            return new ReferenceField((Persistable) currentValue, (Persistable) prevValue, fmd);
         }
 
         // default case, treat as primitive field
-        return new PrimitiveField(field, fmd.getName());
+        return new PrimitiveField(currentValue, prevValue, fmd.getName());
     }
 
 

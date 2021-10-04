@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static mydomain.datatrail.Entity.Action.CREATE;
@@ -39,7 +38,7 @@ public class CollectionTest extends AbstractTest {
 
         final IsPojo<Entity> street = getEntity(CREATE, Street.class, "1")
                 .withProperty("fields", hasItem(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina")
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina", null)
                 ));
 
 
@@ -80,12 +79,12 @@ public class CollectionTest extends AbstractTest {
 
         final IsPojo<Entity> regina = getEntity(CREATE, Street.class, "1")
                 .withProperty("fields", hasItem(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina")
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina", null)
                 ));
 
         final IsPojo<Entity> road = getEntity(CREATE, Street.class, "2")
                 .withProperty("fields", hasItem(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "Road")
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Road", null)
                 ));
 
 
@@ -101,12 +100,12 @@ public class CollectionTest extends AbstractTest {
 
         final IsPojo<Entity> student = getEntity(CREATE, Student.class, "1")
                 .withProperty("fields", hasItem(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "Charline")
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Charline", null)
                 ));
 
         final IsPojo<Entity> school = getEntity(CREATE, School.class, "1")
                 .withProperty("fields", hasItems(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "WADA"),
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "WADA", null),
                         getContainerField(Field.Type.COLLECTION, "addresses")
                                 .withProperty("elements", hasItems(
                                         getListElement(Field.Type.REF, Address.class, "1")
@@ -173,7 +172,7 @@ public class CollectionTest extends AbstractTest {
 
         final IsPojo<Entity> school = getEntity(DELETE, School.class, "1")
                 .withProperty("fields", hasItems(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "WADA"),
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "WADA", null),
                         getContainerField(Field.Type.COLLECTION, "addresses")
                                 .withProperty("elements", hasItems(
                                         getListElement(Field.Type.REF, Address.class, "1")

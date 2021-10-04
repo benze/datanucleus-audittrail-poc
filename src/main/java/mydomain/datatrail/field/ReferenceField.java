@@ -9,10 +9,11 @@ public class ReferenceField extends Field {
 
     protected String description;
 
-    protected ReferenceField(Persistable field, FieldMetaData fmd) {
+    protected ReferenceField(Persistable field, Persistable prevValue, FieldMetaData fmd) {
         super(fmd != null ? fmd.getName() : null, field != null ? field.getClass().getName() : null );
         type = Type.REF;
         setValue(field);
+        setPrevValue(prevValue);
         setDescription(field);
 
     }
@@ -38,6 +39,12 @@ public class ReferenceField extends Field {
     private void setValue( Persistable field){
         if( field != null ){
             value = getObjectId(field.dnGetObjectId());
+        }
+    }
+
+    private void setPrevValue( Persistable field){
+        if( field != null ){
+            prev = getObjectId(field.dnGetObjectId());
         }
     }
 

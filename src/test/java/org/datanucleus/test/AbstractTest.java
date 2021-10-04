@@ -17,6 +17,9 @@ import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
@@ -191,12 +194,12 @@ abstract public class AbstractTest {
 
 
 
-    protected IsPojo<Field> getField(Field.Type type, Class clazz, String name, String value) {
+    protected IsPojo<Field> getField(Field.Type type, Class clazz, String name, String value, String prevValue) {
         IsPojo<Field> field = pojo(Field.class)
                 .withProperty("name", is(name))
                 .withProperty("value", is(value))
                 .withProperty("type", hasToString(type.toString()))
-                .withProperty("prev", nullValue())
+                .withProperty("prev", prevValue == null ? nullValue() : is(prevValue))
                 .withProperty("className", is(clazz.getName()));
         ;
 

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import static mydomain.datatrail.Entity.Action.CREATE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +41,7 @@ public class MapTest extends AbstractTest {
 
         final IsPojo<Entity> student = getEntity(CREATE, Student.class, "1")
                 .withProperty("fields", hasItems(
-                        getField(Field.Type.PRIMITIVE, String.class, "name", "student"),
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "student", null),
                         getContainerField(Field.Type.MAP, "telephoneNbs")
                             .withProperty("contents", hasItem(
                                     getMapElement(Field.Type.PRIMITIVE, TelephoneType.class, TelephoneType.HOME.toString(), Field.Type.REF, Telephone.class, "1")
@@ -52,14 +51,14 @@ public class MapTest extends AbstractTest {
 
         final IsPojo<Entity> cc = getEntity(CREATE, CountryCode.class, "1")
                 .withProperty("fields", hasItems(
-                        getField(Field.Type.PRIMITIVE, String.class, "country", "canada"),
-                        getField(Field.Type.PRIMITIVE, Integer.class, "code", "1")
+                        getField(Field.Type.PRIMITIVE, String.class, "country", "canada", null),
+                        getField(Field.Type.PRIMITIVE, Integer.class, "code", "1", null)
                 ));
 
         final IsPojo<Entity> telephone = getEntity(CREATE, Telephone.class, "1")
                 .withProperty("fields", hasItems(
-                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-5555"),
-                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1" )
+                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-5555", null),
+                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1", null)
                 ));
 
 

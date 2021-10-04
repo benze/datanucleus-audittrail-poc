@@ -146,6 +146,13 @@ public class AuditListener implements CreateLifecycleListener,
                 }
             }
         }
+
+        // postStore called for both new objects and updating objects, so need to determine which is the state of the object
+        Entity.Action action = pc.dnGetStateManager().isNew(pc) ? Entity.Action.CREATE : Entity.Action.UPDATE;
+        if( !JDOHelper.isNew(pc) && JDOHelper.isDirty(pc)) {
+            modifications.put(pc, new Entity(pc, Entity.Action.UPDATE));
+        }
+
     }
 
     public void postStore(InstanceLifecycleEvent event) {
@@ -160,7 +167,9 @@ public class AuditListener implements CreateLifecycleListener,
         // postStore called for both new objects and updating objects, so need to determine which is the state of the object
         Entity.Action action = pc.dnGetStateManager().isNew(pc) ? Entity.Action.CREATE : Entity.Action.UPDATE;
 
-        modifications.put(pc, new Entity(pc, action));
+        if( JDOHelper.isNew(pc) ) {
+            modifications.put(pc, new Entity(pc, action));
+        }
     }
 
     public void transactionStarted() {

@@ -68,7 +68,7 @@ public class Entity {
                 setDeleteFields(pc);
                 break;
             case UPDATE:
-                throw new UnsupportedOperationException("UPDATE not yet supported");
+                setUpdateFields(pc);
         }
     }
 
@@ -164,7 +164,7 @@ public class Entity {
 
                 if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
                     // only add persistable fields to the list of fields
-                    fields.add(Field.newField(field, (FieldMetaData) ammd));
+                    fields.add(Field.newField(field, null, (FieldMetaData) ammd));
                 } else {
                     NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
                 }
@@ -190,7 +190,35 @@ public class Entity {
 
                 if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
                     // only add persistable fields to the list of fields
-                    fields.add(Field.newField(field, (FieldMetaData) ammd));
+                    fields.add(Field.newField(field, null, (FieldMetaData) ammd));
+                } else {
+                    NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * Identifies which fields need to be set when an object is being deleted
+     * @param pc
+     */
+    private void setUpdateFields(Persistable pc){
+        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
+        ExtendedReferentialStateManagerImpl op = (ExtendedReferentialStateManagerImpl)pc.dnGetStateManager();
+
+        if( action == Action.UPDATE){
+            // need to include all dirty fields
+            int[] absoluteFieldPositions = op.getDirtyFieldNumbers();
+            for(int position : absoluteFieldPositions) {
+                Object field = op.provideField(position);
+                Object prevField = op.provideSavedField(position);
+                AbstractMemberMetaData ammd = op.getClassMetaData().getMetaDataForManagedMemberAtAbsolutePosition(position);
+
+                if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
+                    // only add persistable fields to the list of fields
+                    fields.add(Field.newField(field, prevField, (FieldMetaData) ammd));
                 } else {
                     NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
                 }

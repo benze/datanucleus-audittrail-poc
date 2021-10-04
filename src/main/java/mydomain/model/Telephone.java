@@ -30,4 +30,12 @@ public class Telephone implements ITrailDesc
     public String minimalTxtDesc() {
         return number;
     }
+
+    public CountryCode getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(CountryCode countryCode) {
+        this.countryCode = countryCode;
+    }
 }
