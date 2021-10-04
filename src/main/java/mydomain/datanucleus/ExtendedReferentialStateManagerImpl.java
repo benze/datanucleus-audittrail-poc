@@ -68,7 +68,7 @@ public class ExtendedReferentialStateManagerImpl extends ReferentialStateManager
         }
 
         // identify all the fields left to copy
-        int[] fieldsToCopy = ClassUtils.getFlagsSetTo(savedLoadedFields, cmd.getAllMemberPositions(), false);
+        int[] fieldsToCopy = ClassUtils.getFlagsSetTo(savedLoadedFields, ClassUtils.getFlagsSetTo(loadedFields,true), false);
         if( fieldsToCopy == null || fieldsToCopy.length == 0){
             return;
         }
