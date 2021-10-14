@@ -4,18 +4,25 @@ import com.spotify.hamcrest.pojo.IsPojo;
 import mydomain.datatrail.Entity;
 import mydomain.datatrail.field.Field;
 import mydomain.model.Address;
+import mydomain.model.CountryCode;
+import mydomain.model.QCountryCode;
+import mydomain.model.QTelephoneBook;
 import mydomain.model.School;
 import mydomain.model.Street;
 import mydomain.model.Student;
+import mydomain.model.Telephone;
+import mydomain.model.TelephoneBook;
 import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import javax.jdo.JDOQLTypedQuery;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static mydomain.datatrail.Entity.Action.CREATE;
@@ -197,4 +204,107 @@ public class CollectionTest extends AbstractTest {
 
     }
 
+
+    @Test
+    public void updateCollectionArray() throws IOException {
+        executeTx(pm -> {
+            Address address = new Address(new Street[]{new Street("Regina")});
+            pm.makePersistent(address);
+        }, false);
+
+        executeTx(pm -> {
+            Street street = new Street("Calgary");
+            Object id = new DatastoreIdImplKodo(Address.class.getName(), 1);
+            Address p = pm.getObjectById(Address.class, id);
+            p.replaceStreet(0, street);
+        });
+
+
+
+        final IsPojo<Entity> street = getEntity(CREATE, Street.class, "1")
+                .withProperty("fields", hasItem(
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina", null)
+                ));
+
+
+        final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
+                .withProperty("fields", hasItem(
+                        getContainerField(Field.Type.COLLECTION, "street")
+                                .withProperty("elements", hasItem(
+                                        getListElement(Field.Type.REF, Street.class, "1")
+                                ))
+                ));
+
+
+        Collection<Entity> entities = audit.getModifications();
+        assertThat(entities, containsInAnyOrder(street, address));
+    }
+
+
+
+//
+//    @Test
+//    public void updateCollectionList() {
+//        executeTx(pm -> {
+//                    Address address = new Address(new Street[]{
+//                            new Street("Regina"),
+//                            new Street("Road")
+//                    });
+//
+//                    School school = new School("WADA");
+//                    school.setAddresses(Arrays.asList(address));
+//
+//                    Student charline = new Student("Charline");
+//                    Set<Student> students = new HashSet<>();
+//                    students.add(charline);
+//                    school.setStudents(students);
+//
+//                    pm.makePersistent(charline);
+//                    pm.makePersistent(school);
+//                }, false);
+//
+//
+//        executeTx(pm -> {;
+//
+//            School school = pm.getObjectById(School.class, new DatastoreIdImplKodo(School.class.getName(), 1));
+//            List<Address> addresses = school.getAddresses();
+//
+//            Address calgary = new Address(new Street[]{
+//                    new Street("Calgary")
+//            });
+//
+//            // delete all addresss
+//            addresses.clear();
+//
+//            // add the new address
+//            addresses.add(calgary);
+//
+//        }, true);
+//    }
+
+    @Test
+    public void updateListTest(){
+        executeTx(pm -> {
+            Telephone telephone = new Telephone( "514-555-1111", new CountryCode("Canada", 1));
+            TelephoneBook book = new TelephoneBook("Montreal");
+            book.addTelephoneNumber(telephone);
+            pm.makePersistent( book);
+        }, false);
+
+
+
+        executeTx(pm -> {
+            JDOQLTypedQuery<TelephoneBook> tqTb = pm.newJDOQLTypedQuery(TelephoneBook.class);
+            QTelephoneBook cand = QTelephoneBook.candidate();
+            TelephoneBook telephoneBook = tqTb.filter(cand.name.eq("Montreal")).executeUnique();
+
+            JDOQLTypedQuery<CountryCode> tqCc = pm.newJDOQLTypedQuery(CountryCode.class);
+            QCountryCode qCC = QCountryCode.candidate();
+
+            CountryCode canada = tqCc.filter( qCC.code.eq(1)).executeUnique();
+
+            telephoneBook.addTelephoneNumber(new Telephone("514-555-5555", canada));
+        });
+
+    }
 }
