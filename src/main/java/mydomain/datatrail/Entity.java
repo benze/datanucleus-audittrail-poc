@@ -211,21 +211,30 @@ public class Entity {
         if( action == Action.UPDATE){
             // need to include all dirty fields
             int[] absoluteFieldPositions = op.getDirtyFieldNumbers();
-            for(int position : absoluteFieldPositions) {
-                Object field = op.provideField(position);
-                Object prevField = op.provideSavedField(position);
-                AbstractMemberMetaData ammd = op.getClassMetaData().getMetaDataForManagedMemberAtAbsolutePosition(position);
+            if( absoluteFieldPositions != null ) {
+                for (int position : absoluteFieldPositions) {
+                    Object field = op.provideField(position);
+                    Object prevField = op.provideSavedField(position);
+                    AbstractMemberMetaData ammd = op.getClassMetaData().getMetaDataForManagedMemberAtAbsolutePosition(position);
 
-                if(ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
-                    // only add persistable fields to the list of fields
-                    fields.add(Field.newField(field, prevField, (FieldMetaData) ammd));
-                } else {
-                    NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
+                    if (ammd instanceof FieldMetaData && ammd.isFieldToBePersisted()) {
+                        // only add persistable fields to the list of fields
+                        fields.add(Field.newField(field, prevField, (FieldMetaData) ammd));
+                    } else {
+                        NucleusLogger.GENERAL.debug("No FieldMetaData found for " + ammd.getFullFieldName() + ".  Was " + ammd.getClass().getName() + ".  IsToBePersisted: " + ammd.isFieldToBePersisted() + ". Skipping field");
+                    }
                 }
             }
         }
     }
 
+
+    /**
+     * Method is used to scan through each field to ensure that they have the correct data after the store process (ex: missing ObjectId, other preStore handlers, etc)
+     */
+    public void updateFieldsPostStore(){
+        fields.stream().forEach(field -> field.updateValue());
+    }
 
 
     @Override

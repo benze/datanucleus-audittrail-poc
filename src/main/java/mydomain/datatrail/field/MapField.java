@@ -30,11 +30,13 @@ public class MapField extends Field{
             this.value = value;
         }
 
+        // TODO change return type to Field
         @JsonProperty("key")
         public Object getKey() {
             return key;
         }
 
+        // TODO change return type to Field
         @JsonProperty("value")
         public Object getValue() {
             return value;
@@ -85,5 +87,13 @@ public class MapField extends Field{
 
     public List<Entry> getContents() {
         return contents;
+    }
+
+    @Override
+    public void updateValue() {
+        contents.stream().forEach(entry -> {
+            entry.key.updateValue();
+            entry.value.updateValue();
+        });
     }
 }

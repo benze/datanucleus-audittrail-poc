@@ -5,6 +5,8 @@ import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.metadata.FieldMetaData;
 
+import java.lang.ref.WeakReference;
+
 abstract public class Field {
     public enum Type{
         REF,
@@ -63,6 +65,8 @@ abstract public class Field {
             return new CollectionField(currentValue, fmd);
         } else if (fmd.hasMap()){
             return new MapField(currentValue, fmd);
+
+            // TODO replace with JDOHelper.isPersitable()
         } else if (Persistable.class.isAssignableFrom(fmd.getType())) {
             return new ReferenceField((Persistable) currentValue, (Persistable) prevValue, fmd);
         }
@@ -72,8 +76,11 @@ abstract public class Field {
     }
 
 
+    // TODO rename to getObjectIdAsString()
     protected String getObjectId(Object objectId){
-        if(IdentityUtils.isDatastoreIdentity( objectId ) ) {
+        if( objectId == null )
+            return null;
+        else if(IdentityUtils.isDatastoreIdentity( objectId ) ) {
             return ((DatastoreId) objectId).getKeyAsObject().toString();
         } else {
             return objectId.toString();
@@ -112,4 +119,14 @@ abstract public class Field {
     public String getPrev() {
         return prev;
     }
+
+
+
+    /**
+     * Method to update the value with the latest information from the referenced source object
+     */
+    public void updateValue(){
+        // empty default method does nothing
+    };
+
 }

@@ -68,4 +68,9 @@ public class CollectionField extends Field{
                 "elements=" + elements +
                 '}';
     }
+
+    @Override
+    public void updateValue() {
+        elements.stream().forEach(field -> field.updateValue());
+    }
 }

@@ -5,9 +5,14 @@ import mydomain.model.ITrailDesc;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.metadata.FieldMetaData;
 
+import java.lang.ref.WeakReference;
+
 public class ReferenceField extends Field {
 
     protected String description;
+
+    private WeakReference<Persistable> source;
+
 
     protected ReferenceField(Persistable field, Persistable prevValue, FieldMetaData fmd) {
         super(fmd != null ? fmd.getName() : null, field != null ? field.getClass().getName() : null );
@@ -37,15 +42,36 @@ public class ReferenceField extends Field {
     }
 
     private void setValue( Persistable field){
-        if( field != null ){
-            value = getObjectId(field.dnGetObjectId());
+        if( field == null ){
+            // nothing to do
+            return;
         }
+
+        // TODO JDOHelper.getObjectId()
+        value = getObjectId(field.dnGetObjectId());
+
+        // retain a reference to the original Persistable field
+        setSource( field );
     }
 
     private void setPrevValue( Persistable field){
         if( field != null ){
+            // TODO JDOHelper.getObjectId()
             prev = getObjectId(field.dnGetObjectId());
         }
     }
 
+
+    private void setSource( Persistable pc){
+        source = new WeakReference<>(pc);
+    }
+
+    private Persistable getSource(){
+        return source != null ? source.get() : null;
+    }
+
+    @Override
+    public void updateValue() {
+        setValue(source.get());
+    }
 }
