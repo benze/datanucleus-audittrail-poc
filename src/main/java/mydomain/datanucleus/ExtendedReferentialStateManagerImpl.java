@@ -77,6 +77,16 @@ public class ExtendedReferentialStateManagerImpl extends ReferentialStateManager
         savedLoadedFields = loadedFields.clone();
     }
 
+    @Override
+    protected void replaceField(Persistable pc, int fieldNumber, Object value, boolean makeDirty) {
+        super.replaceField(pc, fieldNumber, value, makeDirty);
+    }
+
+    protected void replaceField(Persistable pc, int fieldNumber, Object value){
+        super.replaceField(pc, fieldNumber, value);
+        updateSavedFields();
+    }
+
 
 
     public Object provideSavedField(int fieldNumber) {
