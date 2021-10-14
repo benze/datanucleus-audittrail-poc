@@ -29,5 +29,13 @@ public class Address
     {
         this.street = street;
     }
+
+    public void replaceStreet(int index, Street street){
+        if( this.street == null || this.street.length < index ) {
+            throw new IllegalStateException("Index does not exist: " + index );
+        }
+
+        this.street[index] = street;
+    }
     
 }
