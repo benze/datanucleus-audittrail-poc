@@ -34,18 +34,26 @@ public class AuditListener implements CreateLifecycleListener,
     Map<Object, Entity> modifications = new HashMap<Object, Entity>() {
         @Override
         public Entity put(Object key, Entity value) {
-            if(key instanceof Persistable){
-                key = ((Persistable)key).dnGetObjectId();
+            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
+                key = JDOHelper.getObjectId(key);
             }
             return super.put(key, value);
         }
 
         @Override
         public Entity get(Object key) {
-            if(key instanceof Persistable){
+            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ){
                 key = ((Persistable)key).dnGetObjectId();
             }
             return super.get(key);
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
+                key = JDOHelper.getObjectId(key);
+            }
+            return super.containsKey(key);
         }
     };
 
@@ -164,12 +172,20 @@ public class AuditListener implements CreateLifecycleListener,
             return;
         }
 
-        // postStore called for both new objects and updating objects, so need to determine which is the state of the object
-        Entity.Action action = pc.dnGetStateManager().isNew(pc) ? Entity.Action.CREATE : Entity.Action.UPDATE;
+        // check to see if the entity is already in the modifications map
+        if( modifications.containsKey(pc)){
+            modifications.get(pc).updateFieldsPostStore();
+        } else {
+            // postStore called for both new objects and updating objects, so need to determine which is the state of the object
+            Entity.Action action = pc.dnGetStateManager().isNew(pc) ? Entity.Action.CREATE : Entity.Action.UPDATE;
 
-        if( JDOHelper.isNew(pc) ) {
-            modifications.put(pc, new Entity(pc, action));
+    //        if( JDOHelper.isNew(pc) ) {
+                modifications.put(pc, new Entity(pc, action));
+    //        }
+
         }
+
+
     }
 
     public void transactionStarted() {
