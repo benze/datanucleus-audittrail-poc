@@ -12,11 +12,11 @@
     <properties>
         <javax_jdo.ver>3.2.0-m13</javax_jdo.ver>
         <dn.core.min.ver>5.1.99</dn.core.min.ver>
-        <dn.core.max.ver>5.99.0</dn.core.max.ver>
+        <dn.core.max.ver>5.2.8</dn.core.max.ver>
         <dn.api_jdo.min.ver>5.1.99</dn.api_jdo.min.ver>
         <dn.api_jdo.max.ver>5.99.0</dn.api_jdo.max.ver>
         <dn.datastore.min.ver>5.1.99</dn.datastore.min.ver>
-        <dn.datastore.max.ver>5.99.0</dn.datastore.max.ver>
+        <dn.datastore.max.ver>5.2.9</dn.datastore.max.ver>
         <dn.maven.plugin.ver>5.2.1</dn.maven.plugin.ver>
     </properties>
 
@@ -31,6 +31,11 @@
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
             <version>[${dn.core.min.ver}, ${dn.core.max.ver}]</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-jdo-query</artifactId>
+            <version>[5.0, ${dn.core.max.ver}]</version>
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
@@ -73,6 +78,12 @@
             <version>2.10.0</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>org.datanucleus</groupId>-->
+<!--            <artifactId>jdo-java-types</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -96,6 +107,12 @@
             <artifactId>hamcrest-pojo</artifactId>
             <version>1.2.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -130,7 +147,7 @@
                     <encoding>ISO-8859-1</encoding>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
+            </configuration>
             </plugin>
 
             <plugin>
@@ -157,6 +174,28 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <!-- Need to have MANIFEST.MF in place before
+                            packaging, so unit-tests will work -->
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Automatic-Module-Name>jdo.dn-plugin</Automatic-Module-Name>
+                        <Bundle-SymbolicName>$(maven-symbolicname);singleton:=true</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
@@ -166,6 +205,7 @@
                     </includes>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

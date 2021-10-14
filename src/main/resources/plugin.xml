@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<plugin id="mydomain" name="ADAMS DataNucleus plug-in" provider-name="ADAMS">
+    <extension point="org.datanucleus.java_type">
+        <java-type name="java.util.List" dfg="false" wrapper-type="org.datanucleus.store.types.wrappers.List" wrapper-type-backed="mydomain.datanucleus.types.wrappers.backed.List"
+                   container-handler="org.datanucleus.store.types.containers.ArrayListHandler" priority="10"/>
+        <java-type name="java.util.Arrays$ArrayList" dfg="false" wrapper-type="org.datanucleus.store.types.wrappers.List" wrapper-type-backed="mydomain.datanucleus.types.wrappers.backed.List"
+                   container-handler="org.datanucleus.store.types.containers.ArrayListHandler" priority="10"/>
+    </extension>
+</plugin>
