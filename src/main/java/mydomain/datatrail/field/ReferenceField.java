@@ -11,7 +11,7 @@ public class ReferenceField extends Field {
 
     protected String description;
 
-    private WeakReference<Persistable> source;
+    private WeakReference<Persistable> source = new WeakReference<>(null);
 
 
     protected ReferenceField(Persistable field, Persistable prevValue, FieldMetaData fmd) {
