@@ -16,6 +16,7 @@ import org.datanucleus.util.NucleusLogger;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
+import java.lang.ref.WeakReference;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Entity {
     protected String username;
     protected Instant dateModified;
     protected String description;
+    protected WeakReference<Persistable> source = new WeakReference<>(null);
 
 
     /**
@@ -48,11 +50,12 @@ public class Entity {
 
     public Entity(Persistable pc, Action action){
         ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
+        this.source = new WeakReference<>(pc);
 
         setId(pc);
         this.action = action;
         this.className = op.getClassMetaData().getFullClassName();
-        this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
+        setVersion(pc);
         this.dateModified = Instant.now();
 
         if( pc instanceof ITrailDesc){
@@ -137,13 +140,23 @@ public class Entity {
     private void setId( Persistable pc){
         Object objectId = pc.dnGetObjectId();
 
-        if(IdentityUtils.isDatastoreIdentity( objectId ) ) {
+        if( objectId == null ) {
+            id = null;
+        } else if(IdentityUtils.isDatastoreIdentity( objectId ) ) {
             id = ((DatastoreId) objectId).getKeyAsObject().toString();
         } else {
             id = objectId.toString();
         }
     }
 
+
+    private void setVersion(Persistable pc){
+        if( JDOHelper.getVersion(pc) == null ){
+            this.version = null;
+        } else {
+            this.version = JDOHelper.getVersion(pc).toString();
+        }
+    }
 
 
     /**
@@ -233,6 +246,8 @@ public class Entity {
      * Method is used to scan through each field to ensure that they have the correct data after the store process (ex: missing ObjectId, other preStore handlers, etc)
      */
     public void updateFieldsPostStore(){
+        setId(source.get());
+        setVersion(source.get());
         fields.stream().forEach(field -> field.updateValue());
     }
 
