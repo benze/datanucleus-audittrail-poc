@@ -6,6 +6,7 @@ import mydomain.datatrail.field.Field;
 import mydomain.model.Address;
 import mydomain.model.CountryCode;
 import mydomain.model.QCountryCode;
+import mydomain.model.QTelephone;
 import mydomain.model.QTelephoneBook;
 import mydomain.model.School;
 import mydomain.model.Street;
@@ -27,6 +28,7 @@ import java.util.Set;
 
 import static mydomain.datatrail.Entity.Action.CREATE;
 import static mydomain.datatrail.Entity.Action.DELETE;
+import static mydomain.datatrail.Entity.Action.UPDATE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
@@ -52,7 +54,7 @@ public class CollectionTest extends AbstractTest {
         final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
                 .withProperty("fields", hasItem(
                         getContainerField(Field.Type.COLLECTION, "street")
-                                .withProperty("elements", hasItem(
+                                .withProperty("added", hasItem(
                                         getListElement(Field.Type.REF, Street.class, "1")
                                 ))
                 ));
@@ -98,7 +100,7 @@ public class CollectionTest extends AbstractTest {
         final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
                 .withProperty("fields", hasItem(
                         getContainerField(Field.Type.COLLECTION, "street")
-                                .withProperty("elements", hasItems(
+                                .withProperty("added", hasItems(
                                         getListElement(Field.Type.REF, Street.class, "1"),
                                         getListElement(Field.Type.REF, Street.class, "2")
                                 ))
@@ -114,19 +116,15 @@ public class CollectionTest extends AbstractTest {
                 .withProperty("fields", hasItems(
                         getField(Field.Type.PRIMITIVE, String.class, "name", "WADA", null),
                         getContainerField(Field.Type.COLLECTION, "addresses")
-                                .withProperty("elements", hasItems(
+                                .withProperty("added", hasItems(
                                         getListElement(Field.Type.REF, Address.class, "1")
                                 )),
                         getContainerField(Field.Type.COLLECTION, "students")
-                                .withProperty("elements", hasItems(
+                                .withProperty("added", hasItems(
                                         getListElement(Field.Type.REF, Student.class, "1")
                                 ))
                 ));
 
-
-        assertThat(audit.getModifications(), hasItem(
-                school
-        ));
 
         assertThat(audit.getModifications(), containsInAnyOrder(
                 regina,
@@ -171,7 +169,7 @@ public class CollectionTest extends AbstractTest {
         final IsPojo<Entity> address = getEntity(DELETE, Address.class, "1")
                 .withProperty("fields", hasItem(
                         getContainerField(Field.Type.COLLECTION, "street")
-                                .withProperty("elements", hasItems(
+                                .withProperty("removed", hasItems(
                                         getListElement(Field.Type.REF, Street.class, "1"),
                                         getListElement(Field.Type.REF, Street.class, "2")
                                 ))
@@ -181,18 +179,22 @@ public class CollectionTest extends AbstractTest {
                 .withProperty("fields", hasItems(
                         getField(Field.Type.PRIMITIVE, String.class, "name", "WADA", null),
                         getContainerField(Field.Type.COLLECTION, "addresses")
-                                .withProperty("elements", hasItems(
+                                .withProperty("removed", hasItems(
                                         getListElement(Field.Type.REF, Address.class, "1")
                                 )),
                         getContainerField(Field.Type.COLLECTION, "students")
-                                .withProperty("elements", hasItems(
+                                .withProperty("removed", hasItems(
                                         getListElement(Field.Type.REF, Student.class, "1")
                                 ))
                 ));
 
-//        assertThat(audit.getModifications(), hasItem(
-//                regina
-//        ));
+        assertThat(audit.getModifications(), hasItem(
+                address
+        ));
+
+        assertThat(audit.getModifications(), hasItem(
+                school
+        ));
 
         // only the address is defined as a dependent field of school, so address object will be deleted.
         // individual streets are not dependent fields of address, so they will NOT be cascade deleted
@@ -230,7 +232,7 @@ public class CollectionTest extends AbstractTest {
         final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
                 .withProperty("fields", hasItem(
                         getContainerField(Field.Type.COLLECTION, "street")
-                                .withProperty("elements", hasItem(
+                                .withProperty("added", hasItem(
                                         getListElement(Field.Type.REF, Street.class, "1")
                                 ))
                 ));
@@ -285,26 +287,82 @@ public class CollectionTest extends AbstractTest {
     @Test
     public void updateListTest(){
         executeTx(pm -> {
-            Telephone telephone = new Telephone( "514-555-1111", new CountryCode("Canada", 1));
             TelephoneBook book = new TelephoneBook("Montreal");
-            book.addTelephoneNumber(telephone);
+            CountryCode canada = new CountryCode("Canada", 1);
+            for( int i = 0; i< 10; i++){
+                Telephone telephone = new Telephone( "514-555-111" + i, canada);
+                book.addTelephoneNumber(telephone);
+            }
             pm.makePersistent( book);
         }, false);
 
 
 
         executeTx(pm -> {
-            JDOQLTypedQuery<TelephoneBook> tqTb = pm.newJDOQLTypedQuery(TelephoneBook.class);
-            QTelephoneBook cand = QTelephoneBook.candidate();
-            TelephoneBook telephoneBook = tqTb.filter(cand.name.eq("Montreal")).executeUnique();
 
-            JDOQLTypedQuery<CountryCode> tqCc = pm.newJDOQLTypedQuery(CountryCode.class);
-            QCountryCode qCC = QCountryCode.candidate();
+            TelephoneBook telephoneBook = pm.newJDOQLTypedQuery(TelephoneBook.class).filter(QTelephoneBook.candidate().name.eq("Montreal")).executeUnique();
+            CountryCode canada = pm.newJDOQLTypedQuery(CountryCode.class).filter( QCountryCode.candidate().code.eq(1)).executeUnique();
 
-            CountryCode canada = tqCc.filter( qCC.code.eq(1)).executeUnique();
-
+            // add a new telephone number to the book
             telephoneBook.addTelephoneNumber(new Telephone("514-555-5555", canada));
+
+            Telephone tel3 = pm.newJDOQLTypedQuery(Telephone.class).filter(QTelephone.candidate().number.endsWith("3")).executeUnique();
+            // delete a telephone number.  Since it is only the telephone Entity being deleted, no changes should be seen in the TelephoneBook
+            pm.deletePersistent(tel3);
         });
+
+
+//        executeTx(pm -> {
+//            JDOQLTypedQuery<TelephoneBook> tqTb = pm.newJDOQLTypedQuery(TelephoneBook.class);
+//            QTelephoneBook cand = QTelephoneBook.candidate();
+//            TelephoneBook telephoneBook = tqTb.filter(cand.name.eq("Montreal")).executeUnique();
+//            telephoneBook.getTelephoneNumbers();
+//        });
+
+
+        final IsPojo<Entity> five555 = getEntity(CREATE, Telephone.class, ANY)
+                .withProperty( "fields", hasItems(
+                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-5555", null),
+                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1", null)
+                        )
+                );
+
+        final IsPojo<Entity> one113 = getEntity(DELETE, Telephone.class, ANY)
+                .withProperty( "fields", hasItems(
+                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-1113", null),
+                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1", null)
+                        )
+                );
+
+
+        final IsPojo<Entity> telephoneBook = getEntity(UPDATE, TelephoneBook.class, "1")
+                .withProperty("fields", hasItem(
+                        getContainerField(Field.Type.COLLECTION, "telephoneNumbers")
+                                .withProperty("added", hasItem(
+                                        getListElement(Field.Type.REF, Telephone.class, "11")
+                                ))
+                ));
+
+        Collection<Entity> entities = audit.getModifications();
+        assertThat(entities, hasItem( telephoneBook));
+
+
+
+
+        final IsPojo<Entity> street = getEntity(CREATE, Street.class, "1")
+                .withProperty("fields", hasItem(
+                        getField(Field.Type.PRIMITIVE, String.class, "name", "Regina", null)
+                ));
+
+
+        final IsPojo<Entity> address = getEntity(CREATE, Address.class, "1")
+                .withProperty("fields", hasItem(
+                        getContainerField(Field.Type.COLLECTION, "street")
+                                .withProperty("added", hasItem(
+                                        getListElement(Field.Type.REF, Street.class, "1")
+                                ))
+                ));
+
 
     }
 }

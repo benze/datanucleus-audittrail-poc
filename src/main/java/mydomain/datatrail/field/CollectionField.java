@@ -3,16 +3,20 @@ package mydomain.datatrail.field;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.datanucleus.metadata.FieldMetaData;
+import mydomain.datanucleus.type.wrappers.tracker.ChangeTrackable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // https://wada-ama.atlassian.net/wiki/spaces/AR/pages/1310949916/Adams+Data+Trail#Collection-fields
 public class CollectionField extends Field{
 
-    protected List<Field> elements = new ArrayList<>();
+    protected Collection<Field> added = new ArrayList<>();
+    protected Collection<Field> removed = new ArrayList<>();
+
 
 
     protected CollectionField(Object field, FieldMetaData fmd) {
@@ -45,19 +49,29 @@ public class CollectionField extends Field{
      * Elements which are part of this collection
      * @return
      */
-    @JsonProperty("elements")
-    public List<Field> getElements(){
-        return elements;
+    @JsonProperty("added")
+    public Collection<Field> getAdded(){
+        return added;
     }
 
+    @JsonProperty("removed")
+    public Collection<Field> getRemoved() {
+        return removed;
+    }
 
     /**
      * Adds all the elements in the collection
      * @param elements
      */
     private void addElements( Collection elements ){
-        for( Object element : elements){
-            this.elements.add(Field.newField(element));
+        if( elements instanceof ChangeTrackable){
+            mydomain.datanucleus.type.wrappers.tracker.ChangeTracker changeTracker = ((ChangeTrackable)elements).getChangeTracker();
+            added = (Collection<Field>) changeTracker.getAdded().stream().map(o -> Field.newField(o, null)).collect(Collectors.toList());
+            removed = (Collection<Field>) changeTracker.getRemoved().stream().map(o -> Field.newField(o, null)).collect(Collectors.toList());
+        } else {
+            for (Object element : elements) {
+                this.added.add(Field.newField(element));
+            }
         }
     }
 
@@ -65,12 +79,12 @@ public class CollectionField extends Field{
     @Override
     public String toString() {
         return "CollectionField{" +
-                "elements=" + elements +
+                "elements=" + added +
                 '}';
     }
 
     @Override
     public void updateValue() {
-        elements.stream().forEach(field -> field.updateValue());
+        added.stream().forEach(field -> field.updateValue());
     }
 }
