@@ -31,31 +31,32 @@ public class AuditListener implements CreateLifecycleListener,
     NucleusLogger logger = NucleusLogger.getLoggerInstance("Console");
 
     //    Stack<Entity> modifications = new Stack<>();
-    Map<Object, Entity> modifications = new HashMap<Object, Entity>() {
-        @Override
-        public Entity put(Object key, Entity value) {
-            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
-                key = JDOHelper.getObjectId(key);
-            }
-            return super.put(key, value);
-        }
-
-        @Override
-        public Entity get(Object key) {
-            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ){
-                key = ((Persistable)key).dnGetObjectId();
-            }
-            return super.get(key);
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
-                key = JDOHelper.getObjectId(key);
-            }
-            return super.containsKey(key);
-        }
-    };
+    Map<Object, Entity> modifications = new HashMap<Object, Entity>();
+//    {
+//        @Override
+//        public Entity put(Object key, Entity value) {
+//            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
+//                key = JDOHelper.getObjectId(key);
+//            }
+//            return super.put(key, value);
+//        }
+//
+//        @Override
+//        public Entity get(Object key) {
+//            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ){
+//                key = ((Persistable)key).dnGetObjectId();
+//            }
+//            return super.get(key);
+//        }
+//
+//        @Override
+//        public boolean containsKey(Object key) {
+//            if(key instanceof Persistable && JDOHelper.getObjectId(key) != null ) {
+//                key = JDOHelper.getObjectId(key);
+//            }
+//            return super.containsKey(key);
+//        }
+//    };
 
 
     public AuditListener() {
@@ -157,9 +158,9 @@ public class AuditListener implements CreateLifecycleListener,
 
         // postStore called for both new objects and updating objects, so need to determine which is the state of the object
         Entity.Action action = pc.dnGetStateManager().isNew(pc) ? Entity.Action.CREATE : Entity.Action.UPDATE;
-        if( !JDOHelper.isNew(pc) && JDOHelper.isDirty(pc)) {
-            modifications.put(pc, new Entity(pc, Entity.Action.UPDATE));
-        }
+//        if( !JDOHelper.isNew(pc) && JDOHelper.isDirty(pc)) {
+            modifications.put(pc, new Entity(pc, action));
+//        }
 
     }
 
