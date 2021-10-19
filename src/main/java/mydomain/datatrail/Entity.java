@@ -21,7 +21,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entity {
+public class Entity extends Node {
 
     public enum Action{
         CREATE,
@@ -76,45 +76,45 @@ public class Entity {
     }
 
 
-    /**
-     *
-     * @param pc
-     * @param delete true if pc is being deleted.  False otherwise (ie: saved/updated/etc).
-     */
-    public Entity(Persistable pc, boolean delete) {
-        ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
-
-        // if the object is being deleted, the constructor must be called before the object is actually deleted from the
-        // datastore, and before the object's state has registered it as being "in deletion", or will be impossible to retrieve
-        if( delete ){
-            action = Action.DELETE;
-        } else {
-            // use the lifecycle to identify if the object is being created or updated
-            // TODO use JDOHelper.getObjectState() instead of DN LifecycleState
-            setAction(op.getLifecycleState());
-        }
-        setId(pc);
-
-        this.className = op.getClassMetaData().getFullClassName();
-        this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
-        this.dateModified = Instant.now();
-
-        if( pc instanceof ITrailDesc){
-            description = ((ITrailDesc)pc).minimalTxtDesc();
-        }
-
-        // set the fields for the entity
-        switch(action){
-            case CREATE:
-                setCreateFields(pc);
-                break;
-            case DELETE:
-                setDeleteFields(pc);
-                break;
-            case UPDATE:
-                throw new UnsupportedOperationException("UPDATE not yet supported");
-        }
-    }
+//    /**
+//     *
+//     * @param pc
+//     * @param delete true if pc is being deleted.  False otherwise (ie: saved/updated/etc).
+//     */
+//    public Entity(Persistable pc, boolean delete) {
+//        ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
+//
+//        // if the object is being deleted, the constructor must be called before the object is actually deleted from the
+//        // datastore, and before the object's state has registered it as being "in deletion", or will be impossible to retrieve
+//        if( delete ){
+//            action = Action.DELETE;
+//        } else {
+//            // use the lifecycle to identify if the object is being created or updated
+//            // TODO use JDOHelper.getObjectState() instead of DN LifecycleState
+//            setAction(op.getLifecycleState());
+//        }
+//        setId(pc);
+//
+//        this.className = op.getClassMetaData().getFullClassName();
+//        this.version = pc.dnGetVersion() != null ? pc.dnGetVersion().toString() : null;
+//        this.dateModified = Instant.now();
+//
+//        if( pc instanceof ITrailDesc){
+//            description = ((ITrailDesc)pc).minimalTxtDesc();
+//        }
+//
+//        // set the fields for the entity
+//        switch(action){
+//            case CREATE:
+//                setCreateFields(pc);
+//                break;
+//            case DELETE:
+//                setDeleteFields(pc);
+//                break;
+//            case UPDATE:
+//                throw new UnsupportedOperationException("UPDATE not yet supported");
+//        }
+//    }
 
 
     /**

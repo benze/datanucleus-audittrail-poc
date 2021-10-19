@@ -1,5 +1,6 @@
 package mydomain.datatrail.field;
 
+import mydomain.datatrail.Node;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.identity.IdentityUtils;
@@ -7,7 +8,7 @@ import org.datanucleus.metadata.FieldMetaData;
 
 import java.lang.ref.WeakReference;
 
-abstract public class Field {
+abstract public class Field extends Node {
     public enum Type{
         REF,
         MAP,
@@ -25,6 +26,7 @@ abstract public class Field {
     protected Field(String fieldName, String className){
        this.name = fieldName;
        this.className = className;
+       this.nodeType = Node.Type.FIELD;
     }
 
 
