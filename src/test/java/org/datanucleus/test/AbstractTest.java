@@ -14,6 +14,9 @@ import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.util.NucleusLogger;
 import org.h2.server.TcpServer;
 import org.h2.tools.Server;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +37,10 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -44,6 +49,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 abstract public class AbstractTest {
 
     static NucleusLogger CONSOLE = NucleusLogger.getLoggerInstance("Console");
+
+    protected String ANY = "ANY";
 
     @FunctionalInterface
     public interface TransactionContent {
@@ -122,7 +129,7 @@ abstract public class AbstractTest {
     protected IsPojo<Entity> getEntity(Entity.Action action, Class clazz, String id) {
         IsPojo<Entity> entity = pojo(Entity.class)
                 .withProperty("className", is(clazz.getName()))
-                .withProperty("id", is(id))
+                .withProperty("id", getValueMatcher(id))
                 .withProperty("action", hasToString(action.toString()))
                 .withProperty("version", any(String.class))
                 .withProperty("dateModified", any(Instant.class))
@@ -197,7 +204,7 @@ abstract public class AbstractTest {
     protected IsPojo<Field> getField(Field.Type type, Class clazz, String name, String value, String prevValue) {
         IsPojo<Field> field = pojo(Field.class)
                 .withProperty("name", is(name))
-                .withProperty("value", is(value))
+                .withProperty("value", getValueMatcher(value))
                 .withProperty("type", hasToString(type.toString()))
                 .withProperty("prev", prevValue == null ? nullValue() : is(prevValue))
                 .withProperty("className", is(clazz.getName()));
@@ -208,6 +215,22 @@ abstract public class AbstractTest {
         }
 
         return field;
+    }
 
+
+    /**
+     * Converts the input value to the appropriate matcher.  Supports "special" values defined as constants
+     * @param value
+     * @param
+     * @return
+     */
+    private Matcher<String> getValueMatcher(String value) {
+        if( value == null )
+            return nullValue(String.class);
+        else if (ANY.equals(value)){
+            return is(any(String.class));
+        } else {
+            return is(value);
+        }
     }
 }
