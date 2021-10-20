@@ -28,8 +28,7 @@ abstract public class Node {
 
     /**
      * Constructor delegation by the subclasses
-     * @param value
-     * @param mmd
+     * @param md
      * @param parent
      */
     protected Node(MetaData md, Node parent) {
@@ -43,7 +42,8 @@ abstract public class Node {
             className = ((AbstractClassMetaData) md).getFullClassName();
         } else if( md instanceof AbstractMemberMetaData){
             AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
-            className = mmd.getTypeName();
+            // need to get the wrapped name of the class to avoid primitives
+            className = ClassUtils.wrap(mmd.getType()).getTypeName();
             name = mmd.getName();
         }
     }

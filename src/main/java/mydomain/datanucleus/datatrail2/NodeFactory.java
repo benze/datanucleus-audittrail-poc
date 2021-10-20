@@ -9,13 +9,15 @@ import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.MetaData;
 import org.datanucleus.state.ObjectProvider;
-import org.datanucleus.util.ClassUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.datanucleus.util.ClassUtils.getConstructorWithArguments;
+
 
 /**
  * Singleton factory responsible for instantiating a node type based on requirements
@@ -92,7 +94,7 @@ public class NodeFactory {
             throw new IllegalArgumentException("No such type/action supported: " + type + " / " + action);
         }
 
-        Constructor ctor = ClassUtils.getConstructorWithArguments(clazz, new Class[]{getClass(value), getClass(md), getClass(parent)});
+        Constructor ctor = getConstructorWithArguments(clazz, new Class[]{ClassUtils.getClass(value), ClassUtils.getClass(md), ClassUtils.getClass(parent)});
         try {
             return (Node)ctor.newInstance(value, md, parent);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -101,14 +103,6 @@ public class NodeFactory {
     }
 
 
-    /**
-     * Null safe method to return the class of an object
-     * @param object
-     * @return the Class of the object.  Null if object is null
-     */
-    private Class getClass(Object object){
-        return object == null ? null : object.getClass();
-    }
     // TODO move this logic to the individual Node implementation to determine if they can handle it or not
     /**
      * Determine the type of node needed for the given object
