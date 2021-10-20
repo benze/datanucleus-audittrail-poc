@@ -25,11 +25,8 @@ public class Reference extends ReferenceNode {
      * @param mmd
      * @param parent
      */
-    public Reference(Object value, AbstractMemberMetaData mmd, Node parent){
-        super((Persistable) value, mmd, parent);
-        if(!(value instanceof Persistable)){
-            throw new IllegalArgumentException("This class only accepts " + Persistable.class.getName());
-        }
+    public Reference(Persistable value, AbstractMemberMetaData mmd, Node parent){
+        super(value, mmd, parent);
 
         if( value != null ) {
             this.value = value.toString();

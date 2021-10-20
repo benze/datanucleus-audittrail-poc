@@ -41,13 +41,13 @@ public class Entity extends ReferenceNode {
     /**
      * Default constructor.  Should only be called via the NodeFactory
      * @param value
-     * @param mmd
+     * @param md
      * @param parent
      */
-    public Entity(Object value, MetaData md, Node parent){
+    public Entity(Persistable value, MetaData md, Node parent){
         // an entity is the root node in the tree
-        super((Persistable) value, md,null);
-        setFields((Persistable) value);
+        super(value, md,null);
+        setFields( value);
         dateModified = Instant.now();
     }
 
