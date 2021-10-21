@@ -129,13 +129,19 @@ public class NodeFactory {
         AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
 
         // if the object is a peristable object, it must be a REF
-        if( value instanceof Persistable){
+        if( value instanceof Persistable ){
             return NodeType.REF;
         }
 
-        // if the object is not a persistable object, need to find if it is a special container (ie: collection / Map)
+        // if the value is not a persistable object, need to find if it is a special container (ie: collection / Map)
         // mmd can be null if the node is part of a container object
+
+        // TODO need to figure out how to identify MMD for individual container fields
         if( mmd != null ) {
+            if( Persistable.class.isAssignableFrom(mmd.getType())){
+                return NodeType.REF;
+            }
+
             if (mmd.hasArray()) {
                 logger.warn("Unable to track changes to objects with arrays. {}.{}", mmd.getClassName(), mmd.getName());
                 return NodeType.ARRAY;
