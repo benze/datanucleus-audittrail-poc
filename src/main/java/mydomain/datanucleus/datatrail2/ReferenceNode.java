@@ -72,7 +72,7 @@ abstract public class ReferenceNode extends Node {
 
     @JsonProperty("id")
     @Override
-    public String getValue() {
+    public Object getValue() {
         return super.getValue();
     }
 

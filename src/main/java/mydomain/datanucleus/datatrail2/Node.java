@@ -20,7 +20,7 @@ abstract public class Node {
 
     protected String name;
     protected String className;
-    protected String value;
+    protected Object value;
     protected String prev;
     protected MetaData md;
 
@@ -106,7 +106,7 @@ abstract public class Node {
     }
 
     @JsonProperty("value")
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
