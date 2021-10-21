@@ -47,12 +47,15 @@ public class Entity extends ReferenceNode {
     public Entity(Persistable value, MetaData md, Node parent){
         // an entity is the root node in the tree
         super(value, md,null);
-        setFields( value);
+        setFields(value);
         dateModified = Instant.now();
     }
 
 
     private void setFields(Persistable pc){
+        if( pc == null )
+            return;
+
         PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
         ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
 

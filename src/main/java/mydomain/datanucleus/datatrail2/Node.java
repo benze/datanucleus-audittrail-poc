@@ -25,7 +25,6 @@ abstract public class Node {
     protected MetaData md;
 
 
-
     /**
      * Constructor delegation by the subclasses
      * @param md
@@ -64,6 +63,24 @@ abstract public class Node {
             return getObjectProvider(node.getParent());
         }
     }
+
+
+    /**
+     * Sets the classname if not already set
+     * @param value
+     */
+    protected void setClassName( Object value, boolean override ){
+        // if no value, then nothing to do
+        if( value == null )
+            return;
+
+        // if classname already set and not asking to override, then done
+        if( !override && className != null )
+            return;
+
+        className = ClassUtils.getClass(value).getName();
+    }
+
 
 
     /**

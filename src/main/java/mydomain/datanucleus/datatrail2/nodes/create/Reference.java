@@ -28,11 +28,6 @@ public class Reference extends ReferenceNode {
     public Reference(Persistable value, AbstractMemberMetaData mmd, Node parent){
         super(value, mmd, parent);
 
-        if( value != null ) {
-            this.value = value.toString();
-            setDescription(value);
-        }
-
         if( mmd != null )
             this.name = mmd.getName();
     }

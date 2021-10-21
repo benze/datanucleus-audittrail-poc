@@ -1,5 +1,6 @@
 package mydomain.datanucleus.datatrail2.nodes.create;
 
+import mydomain.datanucleus.datatrail2.ClassUtils;
 import mydomain.datanucleus.datatrail2.Node;
 import mydomain.datanucleus.datatrail2.NodeType;
 import org.datanucleus.metadata.AbstractMemberMetaData;
@@ -27,8 +28,7 @@ public class Primitive extends Node {
     public Primitive(Object value, AbstractMemberMetaData mmd, Node parent){
         // an entity is the root node in the tree
         super(mmd, parent);
-        this.value = value.toString();
-        this.name = mmd.getName();
+        this.value = value == null ? null : value.toString();
+        setClassName(value, false);
     }
-
 }

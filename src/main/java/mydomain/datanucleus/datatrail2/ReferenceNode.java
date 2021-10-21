@@ -22,6 +22,11 @@ abstract public class ReferenceNode extends Node {
         this.source = new WeakReference(source);
         setId(source);
         setVersion(source);
+        setDescription(source);
+        setClassName(source, false);
+//        if( className == null && source != null ){
+//            className = ClassUtils.getClass(source).getName();
+//        }
     }
 
     /**
@@ -30,6 +35,9 @@ abstract public class ReferenceNode extends Node {
      * @param pc
      */
     protected void setId(Persistable pc){
+        if( pc == null )
+            return;
+
         Object objectId = pc.dnGetObjectId();
 
         if( objectId == null ) {

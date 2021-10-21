@@ -180,8 +180,8 @@ abstract public class AbstractTest {
         }
 
         IsPojo mapEntry = pojo(Object.class)
-                .withProperty("key", is(key))
-                .withProperty("value", is(value));
+                .withProperty("mapKey", is(key))
+                .withProperty("mapValue", is(value));
 
         return mapEntry;
 

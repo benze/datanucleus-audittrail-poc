@@ -1,4 +1,4 @@
-package org.datanucleus.test;
+package org.datanucleus.test2;
 
 import mydomain.audit.AuditListener;
 import mydomain.model.Address;
@@ -8,7 +8,6 @@ import mydomain.model.Student;
 import org.datanucleus.api.jdo.JDOTransaction;
 import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.datanucleus.util.NucleusLogger;
-import org.h2.tools.Server;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,6 @@ import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
-
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;

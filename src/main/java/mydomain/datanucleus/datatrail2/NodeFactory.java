@@ -47,6 +47,7 @@ public class NodeFactory {
         nodeTypes.get(Node.Action.CREATE).put(NodeType.REF, Reference.class);
         nodeTypes.get(Node.Action.CREATE).put(NodeType.COLLECTION, Collection.class);
         nodeTypes.get(Node.Action.CREATE).put(NodeType.ARRAY, Array.class);
+        nodeTypes.get(Node.Action.CREATE).put(NodeType.MAP, mydomain.datanucleus.datatrail2.nodes.create.Map.class);
     }
 
 
@@ -124,17 +125,20 @@ public class NodeFactory {
         }
 
         // if the object is not a persistable object, need to find if it is a special container (ie: collection / Map)
-        if(mmd.hasArray() ){
-            logger.warn("Unable to track changes to objects with arrays. {}.{}", mmd.getClassName(), mmd.getName());
-            return NodeType.ARRAY;
-        }
+        // mmd can be null if the node is part of a container object
+        if( mmd != null ) {
+            if (mmd.hasArray()) {
+                logger.warn("Unable to track changes to objects with arrays. {}.{}", mmd.getClassName(), mmd.getName());
+                return NodeType.ARRAY;
+            }
 
-        if( mmd.hasCollection() ){
-            return NodeType.COLLECTION;
-        }
+            if (mmd.hasCollection()) {
+                return NodeType.COLLECTION;
+            }
 
-        if( mmd.hasMap() ){
-            return NodeType.MAP;
+            if (mmd.hasMap()) {
+                return NodeType.MAP;
+            }
         }
 
         // default case, treat as primitive field
