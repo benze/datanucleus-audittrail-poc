@@ -70,27 +70,20 @@ public class AuditListener2 implements CreateLifecycleListener,
         // load any extra fields before deletion
         op.loadUnloadedFields();
 
-//        modifications.put(event.getSource(), new Entity(pc, Entity.Action.DELETE));
+        // check to see if the entity is already in the modifications map
+        if( modifications.containsKey(pc)){
+            modifications.get(pc).updateFields();
+        } else {
+            // postStore called for both new objects and updating objects, so need to determine which is the state of the object
+            logger.warn("New Persistable not already processed {}", pc.dnGetObjectId());
+            modifications.put(pc, NodeFactory.getInstance().createRootNode(pc, Node.Action.DELETE));
+        }
     }
 
     public void postDelete(InstanceLifecycleEvent event) {
-//        Persistable pc = (Persistable)event.getSource();
-//        PersistenceManager pm = (PersistenceManager)pc.dnGetExecutionContext().getOwner();
-//        ObjectProvider op = (ObjectProvider)pc.dnGetStateManager();
-//        int[] absoluteFieldPositions = op.getClassMetaData().getAllMemberPositions();
-//
-//        for( int fieldPosition : absoluteFieldPositions ){
-//            Object obj = op.provideField(fieldPosition);
-//        }
-//
-//        boolean[] loadedFields = op.getLoadedFields();
-//        for( int i = 0; i < loadedFields.length; i++){
-//            op.getClassMetaData().getAbsoluAbsolutePositionOfMember(i);
-//        }
-//
+        // TODO handle any pre-delete Instance Callbacks
 
-        NucleusLogger.GENERAL.info("Audit : postDelete for " +
-                ((Persistable) event.getSource()).dnGetObjectId());
+        NucleusLogger.GENERAL.info("Audit : postDelete for " + ((Persistable) event.getSource()).dnGetObjectId());
 //        modifications.push(new Entity((Persistable)event.getSource()));
 
     }

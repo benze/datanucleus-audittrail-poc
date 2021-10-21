@@ -38,6 +38,9 @@ public class NodeFactory {
         registerNodes();
     }
 
+
+    // TODO move to a self-registering system where an individual node type will automatically be detected by the factory
+    // ex: service-pattern, or class scanning
     /**
      * Helper function to register all types of nodes that are accessible to this factory
      */
@@ -48,8 +51,14 @@ public class NodeFactory {
         nodeTypes.get(Node.Action.CREATE).put(NodeType.COLLECTION, Collection.class);
         nodeTypes.get(Node.Action.CREATE).put(NodeType.ARRAY, Array.class);
         nodeTypes.get(Node.Action.CREATE).put(NodeType.MAP, mydomain.datanucleus.datatrail2.nodes.create.Map.class);
-    }
 
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.ENTITY, mydomain.datanucleus.datatrail2.nodes.delete.Entity.class);
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.PRIMITIVE, mydomain.datanucleus.datatrail2.nodes.delete.Primitive.class);
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.REF, mydomain.datanucleus.datatrail2.nodes.delete.Reference.class);
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.COLLECTION, mydomain.datanucleus.datatrail2.nodes.delete.Collection.class);
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.ARRAY, mydomain.datanucleus.datatrail2.nodes.delete.Array.class);
+        nodeTypes.get(Node.Action.DELETE).put(NodeType.MAP, mydomain.datanucleus.datatrail2.nodes.delete.Map.class);
+    }
 
     /**
      * Retrieve the singleton

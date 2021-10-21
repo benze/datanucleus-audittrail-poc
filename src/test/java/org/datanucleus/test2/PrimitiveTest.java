@@ -4,6 +4,7 @@ import com.spotify.hamcrest.pojo.IsPojo;
 import mydomain.datanucleus.datatrail2.Node;
 import mydomain.datanucleus.datatrail2.NodeType;
 import mydomain.model.Street;
+import org.datanucleus.identity.DatastoreIdImplKodo;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -35,46 +36,34 @@ public class PrimitiveTest extends AbstractTest {
         assertThat(entities, containsInAnyOrder(calgary));
     }
 
-//
-//    @Test
-//    public void deletePrimitive() throws IOException {
-//        executeTx((pm) -> {
-//            Street street = new Street("Regina");
-//            pm.makePersistent(street);
-//        }, false);
-//
-//        executeTx(pm -> {
-//            Object id = new DatastoreIdImplKodo(Street.class.getName(), 1);
-//            Street p = pm.getObjectById(Street.class, id);
-//            p.setName("aaaa");
-//
-//            pm.deletePersistent(p);
-//        });
-//
-//
-//        Collection<Entity> entities = audit.getModifications();
-//        assertThat(entities, hasSize(1));
-//        Entity entity = entities.stream().findFirst().get();
-//
-//        assertThat(entity, allOf(
-//                hasProperty("action", hasToString("DELETE")),
-//                hasProperty("id", is("1")),
-//                hasProperty("dateModified", notNullValue()),
-//                hasProperty("fields", hasSize(1))
-//        ));
-//
-//
-//        assertThat(entity.getFields().get(0), allOf(
-//                hasProperty("name", is("name")),
-//                hasProperty("type", hasToString("PRIMITIVE")),
-//                hasProperty("value", is("Regina")),
-//                hasProperty("className", is(String.class.getName()))
-//        ));
-//
-//
-//        // check that the datatrail log is correct
-//        NucleusLogger.GENERAL.info(getJson(audit.getModifications()));
-//    }
+
+    @Test
+    public void deletePrimitive() throws IOException {
+        executeTx((pm) -> {
+            Street street = new Street("Regina");
+            pm.makePersistent(street);
+        }, false);
+
+        executeTx(pm -> {
+            Object id = new DatastoreIdImplKodo(Street.class.getName(), 1);
+            Street p = pm.getObjectById(Street.class, id);
+            p.setName("aaaa");
+
+            pm.deletePersistent(p);
+        });
+
+
+        Collection<Node> entities = audit.getModifications();
+
+        final IsPojo<Node> regina = getEntity(Node.Action.DELETE, Street.class, "1")
+                .withProperty("fields", hasItem(
+                        getField(NodeType.PRIMITIVE, String.class, "name", "Regina", null)
+                ));
+
+        assertThat(entities, hasItem(regina));
+//        assertThat(entities, containsInAnyOrder(regina));
+    }
+
 //
 //
 //
