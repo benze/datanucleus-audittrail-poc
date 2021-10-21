@@ -1,7 +1,4 @@
-package mydomain.datanucleus.type.wrappers.tracker;
-
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTracker;
-import mydomain.datanucleus.type.wrappers.tracker.CollectionChangeTrackerImpl;
+package mydomain.datanucleus.types.wrappers.tracker;
 
 public interface ChangeTrackable {
 

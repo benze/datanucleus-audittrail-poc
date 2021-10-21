@@ -1,11 +1,10 @@
 package mydomain.datanucleus.types.wrappers.backed;
 
+import mydomain.datanucleus.types.wrappers.tracker.ChangeTrackable;
+import mydomain.datanucleus.types.wrappers.tracker.ChangeTracker;
+import mydomain.datanucleus.types.wrappers.tracker.CollectionChangeTrackerImpl;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.state.ObjectProvider;
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTrackable;
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTracker;
-import mydomain.datanucleus.type.wrappers.tracker.CollectionChangeTracker;
-import mydomain.datanucleus.type.wrappers.tracker.CollectionChangeTrackerImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

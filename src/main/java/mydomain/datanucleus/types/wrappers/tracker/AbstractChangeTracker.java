@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package mydomain.datanucleus.type.wrappers.tracker;
+package mydomain.datanucleus.types.wrappers.tracker;
 
 import org.apache.commons.collections.set.MapBackedSet;
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTracker;
 
 import javax.jdo.JDOHelper;
 import java.util.Collection;

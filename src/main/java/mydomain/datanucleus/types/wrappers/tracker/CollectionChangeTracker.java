@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package mydomain.datanucleus.type.wrappers.tracker;
-
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTracker;
+package mydomain.datanucleus.types.wrappers.tracker;
 
 /**
  * Change tracker that can be used for collections. If the user calls

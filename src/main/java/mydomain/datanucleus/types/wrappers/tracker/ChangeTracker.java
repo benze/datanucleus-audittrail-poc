@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package mydomain.datanucleus.type.wrappers.tracker;
+package mydomain.datanucleus.types.wrappers.tracker;
 
 import java.util.Collection;
 

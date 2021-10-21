@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package mydomain.datanucleus.type.wrappers.tracker;
+package mydomain.datanucleus.types.wrappers.tracker;
 
 import org.datanucleus.exceptions.NucleusException;
-import mydomain.datanucleus.type.wrappers.tracker.AbstractChangeTracker;
-import mydomain.datanucleus.type.wrappers.tracker.CollectionChangeTracker;
 
 import java.util.ArrayList;
 import java.util.Collection;

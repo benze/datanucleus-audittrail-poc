@@ -3,7 +3,7 @@ package mydomain.datatrail.field;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.datanucleus.metadata.FieldMetaData;
-import mydomain.datanucleus.type.wrappers.tracker.ChangeTrackable;
+import mydomain.datanucleus.types.wrappers.tracker.ChangeTrackable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public class CollectionField extends Field{
      */
     private void addElements( Collection elements ){
         if( elements instanceof ChangeTrackable){
-            mydomain.datanucleus.type.wrappers.tracker.ChangeTracker changeTracker = ((ChangeTrackable)elements).getChangeTracker();
+            mydomain.datanucleus.types.wrappers.tracker.ChangeTracker changeTracker = ((ChangeTrackable)elements).getChangeTracker();
             added = (Collection<Field>) changeTracker.getAdded().stream().map(o -> Field.newField(o, null)).collect(Collectors.toList());
             removed = (Collection<Field>) changeTracker.getRemoved().stream().map(o -> Field.newField(o, null)).collect(Collectors.toList());
         } else {
