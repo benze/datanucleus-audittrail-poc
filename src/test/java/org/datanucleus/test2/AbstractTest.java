@@ -12,6 +12,9 @@ import mydomain.datanucleus.datatrail2.NodeType;
 import mydomain.datanucleus.datatrail2.nodes.create.Entity;
 import mydomain.model.ITrailDesc;
 import org.datanucleus.api.jdo.JDOTransaction;
+import org.datanucleus.enhancement.Persistable;
+import org.datanucleus.identity.DatastoreId;
+import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.util.NucleusLogger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
@@ -180,8 +183,8 @@ abstract public class AbstractTest {
         }
 
         IsPojo mapEntry = pojo(Object.class)
-                .withProperty("mapKey", is(key))
-                .withProperty("mapValue", is(value));
+                .withProperty("key", is(key))
+                .withProperty("value", is(value));
 
         return mapEntry;
 
@@ -219,6 +222,27 @@ abstract public class AbstractTest {
             return is(any(String.class));
         } else {
             return is(value);
+        }
+    }
+
+
+    /**
+     * Gets the String representation of the object ID (long)
+     * @param pc
+     * @return
+     */
+    protected String getId(Persistable pc) {
+        if (pc == null)
+            return null;
+
+        Object objectId = pc.dnGetObjectId();
+
+        if (objectId == null) {
+            return null;
+        } else if (IdentityUtils.isDatastoreIdentity(objectId)) {
+            return ((DatastoreId) objectId).getKeyAsObject().toString();
+        } else {
+            return objectId.toString();
         }
     }
 }
