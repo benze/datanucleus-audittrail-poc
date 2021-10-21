@@ -21,7 +21,7 @@ abstract public class Node {
     protected String name;
     protected String className;
     protected Object value;
-    protected String prev;
+    protected Object prev;
     protected MetaData md;
 
 
@@ -111,7 +111,7 @@ abstract public class Node {
     }
 
     @JsonProperty("prevValue")
-    public String getPrev() {
+    public Object getPrev() {
         return prev;
     }
 

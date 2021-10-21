@@ -80,7 +80,7 @@ abstract public class ReferenceNode extends Node {
     // it will be shown via a change to the ref object itself.
     @JsonIgnore
     @Override
-    public String getPrev() {
+    public Object getPrev() {
         return super.getPrev();
     }
 
