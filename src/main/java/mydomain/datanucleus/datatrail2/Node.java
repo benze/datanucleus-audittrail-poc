@@ -56,7 +56,7 @@ abstract public class Node {
     private ObjectProvider getObjectProvider(Node node){
         if( node == null ){
             return null;
-        } else if( node.getClass().isAssignableFrom(ReferenceNode.class)){
+        } else if( ReferenceNode.class.isAssignableFrom(node.getClass()) && ((ReferenceNode) node).getSource() != null){
             ReferenceNode refNode = (ReferenceNode) node;
             return (ObjectProvider)refNode.getSource().dnGetStateManager();
         } else {
