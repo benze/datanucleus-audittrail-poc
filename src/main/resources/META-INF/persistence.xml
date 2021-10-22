@@ -17,7 +17,7 @@
 
             <!-- required for DataTrail -->
             <property name="javax.jdo.option.RestoreValues" value="true"/>  <!-- stores the value of the object before making dirty in the StateManager -->
-<!--            <property name="datanucleus.Optimistic" value="true"/> &lt;!&ndash; ensures that all changes are done during the commit stage and not before &ndash;&gt;-->
+            <property name="datanucleus.Optimistic" value="true"/> <!-- ensures that all changes are done during the commit stage and not before -->
             <property name="datanucleus.objectProvider.className" value="mydomain.datanucleus.ExtendedReferentialStateManagerImpl"/>
 
             <property name="datanucleus.schema.autoCreateAll" value="true"/>

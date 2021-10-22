@@ -26,7 +26,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static mydomain.datanucleus.datatrail2.Node.Action.CREATE;
 import static mydomain.datanucleus.datatrail2.Node.Action.DELETE;
+import static mydomain.datanucleus.datatrail2.Node.Action.UPDATE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
@@ -84,19 +86,19 @@ public class CollectionTest extends AbstractTest {
         });
 
 
-        final IsPojo<Node> regina = getEntity(Node.Action.CREATE, Street.class, "1")
+        final IsPojo<Node> regina = getEntity(CREATE, Street.class, "1")
                 .withProperty("fields", hasItem(
                         getField(NodeType.PRIMITIVE, String.class, "name", "Regina", null)
                 ));
 
 
-        final IsPojo<Node> road = getEntity(Node.Action.CREATE, Street.class, "2")
+        final IsPojo<Node> road = getEntity(CREATE, Street.class, "2")
                 .withProperty("fields", hasItem(
                         getField(NodeType.PRIMITIVE, String.class, "name", "Road", null)
                 ));
 
 
-        final IsPojo<Node> address = getEntity(Node.Action.CREATE, Address.class, "1")
+        final IsPojo<Node> address = getEntity(CREATE, Address.class, "1")
                 .withProperty("fields", hasItem(
                         getContainerField(NodeType.ARRAY, "street")
                                 .withProperty("added", hasItems(
@@ -106,12 +108,12 @@ public class CollectionTest extends AbstractTest {
                 ));
 
 
-        final IsPojo<Node> student = getEntity(Node.Action.CREATE, Student.class, "1")
+        final IsPojo<Node> student = getEntity(CREATE, Student.class, "1")
                 .withProperty("fields", hasItem(
                         getField(NodeType.PRIMITIVE, String.class, "name", "Charline", null)
                 ));
 
-        final IsPojo<Node> school = getEntity(Node.Action.CREATE, School.class, "1")
+        final IsPojo<Node> school = getEntity(CREATE, School.class, "1")
                 .withProperty("fields", hasItems(
                         getField(NodeType.PRIMITIVE, String.class, "name", "WADA", null),
                         getContainerField(NodeType.COLLECTION, "addresses")
@@ -286,68 +288,70 @@ public class CollectionTest extends AbstractTest {
 ////        }, true);
 ////    }
 //
-//    @Test
-//    public void updateListTest(){
+    @Test
+    public void updateListTest(){
+        executeTx(pm -> {
+            TelephoneBook book = new TelephoneBook("Montreal");
+            CountryCode canada = new CountryCode("Canada", 1);
+            for( int i = 0; i< 10; i++){
+                Telephone telephone = new Telephone( "514-555-111" + i, canada);
+                book.addTelephoneNumber(telephone);
+            }
+            pm.makePersistent( book);
+        }, false);
+
+
+
+        executeTx(pm -> {
+
+            TelephoneBook telephoneBook = pm.newJDOQLTypedQuery(TelephoneBook.class).filter(QTelephoneBook.candidate().name.eq("Montreal")).executeUnique();
+            CountryCode canada = pm.newJDOQLTypedQuery(CountryCode.class).filter( QCountryCode.candidate().code.eq(1)).executeUnique();
+
+            // add a new telephone number to the book
+            telephoneBook.addTelephoneNumber(new Telephone("514-555-5555", canada));
+
+            Telephone tel3 = pm.newJDOQLTypedQuery(Telephone.class).filter(QTelephone.candidate().number.endsWith("3")).executeUnique();
+            // delete a telephone number.  Since it is only the telephone Entity being deleted, no changes should be seen in the TelephoneBook
+            pm.deletePersistent(tel3);
+        });
+
+
 //        executeTx(pm -> {
-//            TelephoneBook book = new TelephoneBook("Montreal");
-//            CountryCode canada = new CountryCode("Canada", 1);
-//            for( int i = 0; i< 10; i++){
-//                Telephone telephone = new Telephone( "514-555-111" + i, canada);
-//                book.addTelephoneNumber(telephone);
-//            }
-//            pm.makePersistent( book);
-//        }, false);
-//
-//
-//
-//        executeTx(pm -> {
-//
-//            TelephoneBook telephoneBook = pm.newJDOQLTypedQuery(TelephoneBook.class).filter(QTelephoneBook.candidate().name.eq("Montreal")).executeUnique();
-//            CountryCode canada = pm.newJDOQLTypedQuery(CountryCode.class).filter( QCountryCode.candidate().code.eq(1)).executeUnique();
-//
-//            // add a new telephone number to the book
-//            telephoneBook.addTelephoneNumber(new Telephone("514-555-5555", canada));
-//
-//            Telephone tel3 = pm.newJDOQLTypedQuery(Telephone.class).filter(QTelephone.candidate().number.endsWith("3")).executeUnique();
-//            // delete a telephone number.  Since it is only the telephone Entity being deleted, no changes should be seen in the TelephoneBook
-//            pm.deletePersistent(tel3);
+//            JDOQLTypedQuery<TelephoneBook> tqTb = pm.newJDOQLTypedQuery(TelephoneBook.class);
+//            QTelephoneBook cand = QTelephoneBook.candidate();
+//            TelephoneBook telephoneBook = tqTb.filter(cand.name.eq("Montreal")).executeUnique();
+//            telephoneBook.getTelephoneNumbers();
 //        });
-//
-//
-////        executeTx(pm -> {
-////            JDOQLTypedQuery<TelephoneBook> tqTb = pm.newJDOQLTypedQuery(TelephoneBook.class);
-////            QTelephoneBook cand = QTelephoneBook.candidate();
-////            TelephoneBook telephoneBook = tqTb.filter(cand.name.eq("Montreal")).executeUnique();
-////            telephoneBook.getTelephoneNumbers();
-////        });
-//
-//
-//        final IsPojo<Entity> five555 = getEntity(CREATE, Telephone.class, ANY)
-//                .withProperty( "fields", hasItems(
-//                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-5555", null),
-//                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1", null)
-//                        )
-//                );
-//
-//        final IsPojo<Entity> one113 = getEntity(DELETE, Telephone.class, ANY)
-//                .withProperty( "fields", hasItems(
-//                        getField(Field.Type.PRIMITIVE, String.class, "number", "514-555-1113", null),
-//                        getField(Field.Type.REF, CountryCode.class, "countryCode", "1", null)
-//                        )
-//                );
-//
-//
-//        final IsPojo<Entity> telephoneBook = getEntity(UPDATE, TelephoneBook.class, "1")
-//                .withProperty("fields", hasItem(
-//                        getContainerField(Field.Type.COLLECTION, "telephoneNumbers")
-//                                .withProperty("added", hasItem(
-//                                        getListElement(Field.Type.REF, Telephone.class, "11")
-//                                ))
-//                ));
-//
-//        Collection<Entity> entities = audit.getModifications();
-//        assertThat(entities, hasItem( telephoneBook));
-//
+
+
+        final IsPojo<Node> five555 = getEntity(CREATE, Telephone.class, ANY)
+                .withProperty( "fields", hasItems(
+                        getField(NodeType.PRIMITIVE, String.class, "number", "514-555-5555", null),
+                        getField(NodeType.REF, CountryCode.class, "countryCode", "1", null)
+                        )
+                );
+
+        final IsPojo<Node> one113 = getEntity(DELETE, Telephone.class, ANY)
+                .withProperty( "fields", hasItems(
+                        getField(NodeType.PRIMITIVE, String.class, "number", "514-555-1113", null),
+                        getField(NodeType.REF, CountryCode.class, "countryCode", "1", null)
+                        )
+                );
+
+
+        final IsPojo<Node> telephoneBook = getEntity(UPDATE, TelephoneBook.class, "1")
+                .withProperty("fields", hasItem(
+                        getContainerField(NodeType.COLLECTION, "telephoneNumbers")
+                                .withProperty("added", hasItem(
+                                        getListElement(NodeType.REF, Telephone.class, "11")
+                                ))
+                ));
+
+        Collection<Node> entities = audit.getModifications();
+        assertThat(entities, hasItem( five555));
+        assertThat(entities, hasItem( one113));
+        assertThat(entities, hasItem( telephoneBook));
+
 //
 //
 //
@@ -366,5 +370,5 @@ public class CollectionTest extends AbstractTest {
 //                ));
 //
 //
-//    }
+    }
 }
