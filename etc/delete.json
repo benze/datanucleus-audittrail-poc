@@ -1,0 +1,40 @@
+{
+    "action": "DELETE",
+    "class": "izone.adams.model.TwoFAToken",
+    "id": "11031175",
+    "fields": [
+        {
+            "name": "authType",
+            "type": "prim",
+            "val": "PVQ"
+        },
+        {
+            "name": "createdDate",
+            "type": "prim",
+            "val": "22-09-2021 11:36:51.515"
+        },
+        {
+            "name": "expiresDate",
+            "type": "prim"
+        },
+        {
+            "name": "tokenId",
+            "type": "prim",
+            "val": "7111083"
+        },
+        {
+            "name": "tokenValue",
+            "type": "prim"
+        },
+        {
+            "name": "user",
+            "type": "ref",
+            "class": "izone.adams.model.UserAccount",
+            "id": "6124957",
+            "desc": "zorbuser.lg"
+        }
+    ],
+    "noRATImport": false,
+    "user": "No Info",
+    "date": "2021-09-22T15:37:03.453Z"
+}

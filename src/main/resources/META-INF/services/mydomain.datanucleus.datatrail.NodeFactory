@@ -1,0 +1,6 @@
+mydomain.datanucleus.datatrail.nodes.array.ArrayFactory
+mydomain.datanucleus.datatrail.nodes.collection.CollectionFactory
+mydomain.datanucleus.datatrail.nodes.entity.EntityFactory
+mydomain.datanucleus.datatrail.nodes.map.MapFactory
+mydomain.datanucleus.datatrail.nodes.primitive.PrimitiveFactory
+mydomain.datanucleus.datatrail.nodes.reference.ReferenceFactory

@@ -1,0 +1,333 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.datanucleus</groupId>
+    <version>6.0</version>
+    <artifactId>datanucleus-audit-hook</artifactId>
+    <name>DataNucleus JDO Audit Hook</name>
+    <description>DataNucleus JDO audit hook for a persistence application</description>
+
+    <properties>
+        <javax_jdo.ver>3.2.0-m13</javax_jdo.ver>
+        <dn.core.min.ver>5.1.99</dn.core.min.ver>
+        <dn.core.max.ver>5.2.8</dn.core.max.ver>
+        <dn.api_jdo.min.ver>5.1.99</dn.api_jdo.min.ver>
+        <dn.api_jdo.max.ver>5.99.0</dn.api_jdo.max.ver>
+        <dn.datastore.min.ver>5.1.99</dn.datastore.min.ver>
+        <dn.datastore.max.ver>5.2.9</dn.datastore.max.ver>
+        <dn.maven.plugin.ver>5.2.1</dn.maven.plugin.ver>
+
+
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.language>java</sonar.language>
+        <jmockit.version>1.49</jmockit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>javax.jdo</artifactId>
+            <version>${javax_jdo.ver}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-core</artifactId>
+            <version>[${dn.core.min.ver}, ${dn.core.max.ver}]</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-jdo-query</artifactId>
+            <version>[5.0, ${dn.core.max.ver}]</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-api-jdo</artifactId>
+            <version>[${dn.api_jdo.min.ver}, ${dn.api_jdo.max.ver}]</version>
+        </dependency>
+        <!-- Change to the datanucleus-{datastore} plugin required -->
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-rdbms</artifactId>
+            <version>[${dn.datastore.min.ver}, ${dn.datastore.max.ver}]</version>
+        </dependency>
+
+        <!-- Change to the datastore driver required for your datastore -->
+        <dependency>
+            <groupId>javax.transaction</groupId> 
+            <artifactId>javax.transaction-api</artifactId> 
+            <version>1.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.128</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.3.168</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>hamcrest-jackson</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>hamcrest-pojo</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaradai</groupId>
+            <artifactId>matchers</artifactId>
+            <version>0.2</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-all</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}</directory>
+                            <includes>
+                                <include>*.log</include>
+                                <include>test.xls</include>
+                                <include>test.ods</include>
+                                <include>test.ooxml</include>
+                                <include>test.xml</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/testDB</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <encoding>ISO-8859-1</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+            </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-maven-plugin</artifactId>
+                <version>${dn.maven.plugin.ver}</version>
+                <configuration>
+                    <api>JDO</api>
+                    <fork>false</fork>
+                    <verbose>false</verbose>
+                    <log4jConfiguration>${basedir}/src/main/resources/log4j.properties</log4jConfiguration>
+                    <ddlFile>ddl.sql</ddlFile>
+                    <completeDdl>true</completeDdl>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                        <configuration>
+                            <metadataDirectory>${project.build.testOutputDirectory}</metadataDirectory>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.2</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <!-- Need to have MANIFEST.MF in place before
+                            packaging, so unit-tests will work -->
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Automatic-Module-Name>jdo.dn-plugin</Automatic-Module-Name>
+                        <Bundle-SymbolicName>$(maven-symbolicname);singleton:=true</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <argLine>@{argLine} -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <configuration>
+                    <output>file</output>
+                    <append>true</append>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>exportDDL</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-maven-plugin</artifactId>
+                        <version>${dn.maven.plugin.ver}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.h2database</groupId>
+                                <artifactId>h2</artifactId>
+                                <version>1.3.168</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <api>JDO</api>
+                            <fork>false</fork>
+                            <verbose>false</verbose>
+                            <log4jConfiguration>${project.build.testOutputDirectory}/log4j.properties</log4jConfiguration>
+                            <ddlFile>ddl.sql</ddlFile>
+                            <completeDdl>true</completeDdl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>schema-create</goal>
+                                </goals>
+                                <configuration>
+                                    <metadataDirectory>${project.build.testOutputDirectory}</metadataDirectory>
+                                    <verbose>true</verbose>
+                                    <persistenceUnitName>ExportDDL</persistenceUnitName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
